@@ -24,6 +24,7 @@ fn owner_of_dip721(token_id: u64) -> Result<Principal, ApiError> {
 
 #[update(name = "safeTransferFromDip721")]
 async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
+    onlyOwner();
     assert_ne!(
         to,
         Principal::from_slice(&[0; 29]),
@@ -55,6 +56,7 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
 
 #[update(name = "transferFromDip721")]
 async fn transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
+    onlyOwner();
     assert_ne!(
         caller(),
         to,
@@ -127,6 +129,7 @@ fn get_metadata_for_user_dip721(user: Principal) -> Vec<ExtendedMetadataResult> 
 
 #[update(name = "mintDip721")]
 async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt {
+    onlyOwner();
     let response = ledger().mintNFT(&to, &metadata_desc).unwrap();
     let event = IndefiniteEventBuilder::new()
       .caller(caller())
@@ -151,6 +154,7 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
 
 #[update]
 async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
+    onlyOwner();
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
     assert_ne!(
@@ -189,6 +193,7 @@ async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
 #[update]
 async fn mintNFT(mint_request: MintRequest) -> TokenIdentifier {
     trap("Disabled as current EXT metadata doesn't allow multiple assets per token");
+    onlyOwner();
     expect_principal(&mint_request.to);
     expect_caller(&token_level_metadata().owner.expect("token owner not set"));
 
@@ -233,6 +238,7 @@ fn metadata(token_identifier: TokenIdentifier) -> MetadataReturn {
 
 #[update]
 async fn add(transfer_request: TransferRequest) -> TransactionId {
+    onlyOwner();
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
 
