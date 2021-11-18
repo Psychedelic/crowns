@@ -47,6 +47,17 @@ deploy() {
   eval "dfx deploy nft --argument '(principal \"$principal\", \"tkn\", \"token\", principal \"$cap_principal\")'"
 }
 
+deploy_mainnet_test() {
+  eval "dfx deploy --network ic cap"
+  principal=$(dfx identity get-principal)
+  cap_principal=$(cat .dfx/local/canister_ids.json | jq ".cap.local" -r)
+  
+  echo "principal: $principal"
+  echo "cap_principal: $cap_principal"
+  #fn init(owner: Principal, symbol: String, name: String, history: Principal)
+  eval "dfx deploy --network ic  nft --argument '(principal \"$principal\", \"tkn\", \"token\", principal \"$cap_principal\")'"
+}
+
 # deploy
 
 ### BEGIN OF DIP-721 ###
@@ -189,4 +200,5 @@ tests() {
   # getAllMetadataForUser
 }
 
-tests
+# deploy_mainnet_test
+# tests
