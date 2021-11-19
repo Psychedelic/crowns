@@ -63,7 +63,7 @@ deploy_mainnet_test() {
 ### BEGIN OF DIP-721 ###
 mintDip721() {
     mint_for="${AlicePrincipalId}"
-    icx --pem=$DefaultPem update $NftID mintDip721 "(principal \"$mint_for\", vec{})" $IcxPrologueNft
+    icx --pem=$AlicePem update $NftID mintDip721 "(principal \"$mint_for\", vec{})" $IcxPrologueNft
 }
 
 balanceOfDip721() {
@@ -118,6 +118,11 @@ getMetadataDip721() {
 getMetadataForUserDip721() {
     user="${AlicePrincipalId}"
     icx --pem=$DefaultPem query $NftID getMetadataForUserDip721 "(principal \"$user\")" $IcxPrologueNft
+}
+
+getTokenIdsForUserDip721() {
+    user="${AlicePrincipalId}"
+    icx --pem=$DefaultPem query $NftID getTokenIdsForUserDip721 "(principal \"$user\")" $IcxPrologueNft
 }
 
 ### END OF DIP-721 ###
@@ -202,3 +207,7 @@ tests() {
 
 # deploy_mainnet_test
 # tests
+
+# deploy
+mintDip721
+# getTokenIdsForUserDip721

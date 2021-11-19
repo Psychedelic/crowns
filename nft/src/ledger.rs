@@ -76,6 +76,18 @@ impl Ledger {
             .collect()
     }
 
+    pub fn get_token_ids_for_user(&self, user: &Principal) -> Vec<u64> {
+      ledger()
+          .user_tokens
+          .get(&User::principal(*user))
+          .unwrap_or(&vec![])
+          .iter()
+          .map(|token_index| {
+              token_index.clone() as u64
+          })
+          .collect()
+  }
+
     // END DIP-721 //
 
     pub fn owner_of(&self, token_identifier: &TokenIdentifier) -> OwnerResult {
@@ -157,6 +169,18 @@ impl Ledger {
             })
             .collect()
     }
+
+    pub fn get_all_token_ids_for_user(&self, user: &User) -> Vec<u64> {
+      ledger()
+          .user_tokens
+          .get(user)
+          .unwrap_or(&vec![])
+          .iter()
+          .map(|token_index| {
+            token_index.clone() as u64
+          })
+          .collect()
+  }
 
     pub fn metadata(&self, token_identifier: &TokenIdentifier) -> MetadataReturn {
         MetadataReturn::Ok(
