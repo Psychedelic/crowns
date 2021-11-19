@@ -170,18 +170,6 @@ impl Ledger {
             .collect()
     }
 
-    pub fn get_all_token_ids_for_user(&self, user: &User) -> Vec<u64> {
-      ledger()
-          .user_tokens
-          .get(user)
-          .unwrap_or(&vec![])
-          .iter()
-          .map(|token_index| {
-            token_index.clone() as u64
-          })
-          .collect()
-  }
-
     pub fn metadata(&self, token_identifier: &TokenIdentifier) -> MetadataReturn {
         MetadataReturn::Ok(
             ledger()
