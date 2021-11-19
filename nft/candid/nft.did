@@ -286,6 +286,7 @@ type AccountIdentifier = text;
    getMaxLimitDip721: () -> (nat16) query;
    mintDip721: (to: principal, metadata: MetadataDesc) -> (MintReceipt);
    getMetadataForUserDip721: (user: principal) -> (vec ExtendedMetadataResult);
+   getTokenIdsForUserDip721: (user: principal) -> (vec nat64) query;
    // END DIP-721 //
 
    transfer: (TransferRequest) -> (TransferResponse);
