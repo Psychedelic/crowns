@@ -71,7 +71,7 @@ pub type MetadataResult = Result<MetadataDesc, ApiError>;
 
 pub type MetadataDesc = Vec<MetadataPart>;
 
-#[derive(CandidType, Clone, Deserialize, Serialize)]
+#[derive(CandidType, Clone, Deserialize)]
 pub struct MetadataPart {
     pub purpose: MetadataPurpose,
     pub key_val_data: Vec<MetadataKeyVal>,
@@ -84,13 +84,13 @@ pub enum MetadataPurpose {
     Rendered,
 }
 
-#[derive(CandidType, Clone, Deserialize, Serialize)]
+#[derive(CandidType, Clone, Deserialize)]
 pub struct MetadataKeyVal {
     pub key: String,
     pub val: MetadataVal,
 }
 
-#[derive(CandidType, Clone, Deserialize, Serialize)]
+#[derive(CandidType, Clone, Deserialize)]
 pub enum MetadataVal {
     TextContent(String),
     BlobContent(Vec<u8>),
@@ -235,13 +235,13 @@ pub struct MintRequest {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize, Serialize)]
+#[derive(Clone, CandidType, Deserialize)]
 pub enum Metadata {
     fungible(FungibleMetadata),
     nonfungible(Option<MetadataContainer>),
 }
 
-#[derive(Clone, CandidType, Deserialize, Serialize)]
+#[derive(Clone, CandidType, Deserialize)]
 pub struct FungibleMetadata {
     name: String,
     symbol: String,
@@ -250,18 +250,18 @@ pub struct FungibleMetadata {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize, Serialize, new)]
+#[derive(Clone, CandidType, Deserialize, new)]
 pub enum MetadataContainer {
     data(Vec<MetadataValue>),
     blob(Blob),
     json(String),
 }
 
-#[derive(Clone, CandidType, Deserialize, Serialize)]
+#[derive(Clone, CandidType, Deserialize)]
 pub struct MetadataValue(String, Value);
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize, Serialize)]
+#[derive(Clone, CandidType, Deserialize)]
 pub enum Value {
     text(String),
     blob(Blob),
@@ -275,7 +275,7 @@ pub enum CommonError {
     Other(String),
 }
 
-#[derive(Clone, CandidType, Deserialize, Serialize, new)]
+#[derive(Clone, CandidType, Deserialize, new)]
 pub struct TokenMetadata {
     pub account_identifier: AccountIdentifier,
     pub metadata: Metadata,
@@ -333,7 +333,7 @@ pub struct TxLog
   pub tx_records: VecDeque<IndefiniteEvent>,
 }
 
-#[derive(CandidType, Serialize)]
+#[derive(CandidType)]
 pub struct StableStorageBorrowed<'a> {
   pub ledger: &'a Ledger,
   pub token: &'a TokenLevelMetadata,

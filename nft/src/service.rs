@@ -1,7 +1,5 @@
-use crate::ledger::Ledger;
 use crate::types::*;
 use crate::utils::*;
-use std::io::Read;
 
 use ic_kit::ic::trap;
 use ic_kit::ic::caller;
@@ -12,7 +10,6 @@ use cap_sdk::DetailValue;
 use cap_sdk::IndefiniteEventBuilder;
 use cap_sdk::handshake;
 
-use ic_cdk::api::stable::{StableReader, StableWriter};
 
 /// BEGIN DIP-721 ///
 #[query(name = "balanceOfDip721")]

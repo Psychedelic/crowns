@@ -6,9 +6,9 @@ use ic_kit::candid::CandidType;
 use std::collections::HashMap;
 use std::convert::Into;
 use std::default::Default;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(CandidType, Clone, Default, Deserialize, Serialize)]
+#[derive(CandidType, Clone, Default, Deserialize)]
 pub struct Ledger {
     tokens: HashMap<TokenIndex, TokenMetadata>,
     user_tokens: HashMap<User, Vec<TokenIndex>>,
