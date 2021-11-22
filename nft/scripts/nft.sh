@@ -39,8 +39,7 @@ help()
 deploy() {
   #eval "dfx deploy cap"
   principal=$(dfx identity get-principal)
-  #cap_principal=$(cat .dfx/local/canister_ids.json | jq ".cap.local" -r)
-  cap_principal="lj532-6iaaa-aaaah-qcc7a-cai"
+  cap_principal=$(cat .dfx/local/canister_ids.json | jq ".cap.local" -r)
   echo "principal: $principal"
   echo "cap_principal: $cap_principal"
   #fn init(owner: Principal, symbol: String, name: String, history: Principal)
@@ -201,5 +200,6 @@ tests() {
   # getAllMetadataForUser
 }
 
-deploy_mainnet_test
+deploy
+# deploy_mainnet_test
 # tests

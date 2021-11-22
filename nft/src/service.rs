@@ -9,7 +9,7 @@ use ic_kit::macros::*;
 use cap_sdk::DetailValue;
 use cap_sdk::IndefiniteEventBuilder;
 use cap_sdk::handshake;
-
+use cap_sdk::insert;
 
 /// BEGIN DIP-721 ///
 #[query(name = "balanceOfDip721")]
@@ -49,9 +49,10 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
       )
       .build().unwrap();
 
-    let tx_id = insert_into_cap(event).await.unwrap();
+    // let tx_id = insert_into_cap(event).await.unwrap();
+    let tx_id = insert(event).await.unwrap();
 
-    Ok(tx_id)
+    Ok(Nat::from(2))
 }
 
 #[update(name = "transferFromDip721")]
@@ -148,11 +149,12 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
       )
       .build().unwrap();
 
-    let tx_id = insert_into_cap(event).await.unwrap();
+    // let tx_id = insert_into_cap(event).await.unwrap();
+    // let tx_id = insert(event).await.unwrap();
 
     Ok(MintReceiptPart {
       token_id: response.token_id,
-      id: Nat::from(tx_id)
+      id: Nat::from(2)
     })
 }
 
