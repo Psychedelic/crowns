@@ -1,9 +1,11 @@
 use crate::ledger::Ledger;
 use crate::types::*;
 use crate::utils::*;
+use std::io::Read;
 
 use ic_kit::ic::trap;
 use ic_kit::ic::caller;
+use ic_kit::ic;
 use ic_kit::macros::*;
 
 use cap_sdk::DetailValue;
@@ -269,16 +271,17 @@ async fn add(transfer_request: TransferRequest) -> TransactionId {
   }
 
 fn store_data_in_stable_store() {
-    ic_kit::ic::stable_store((ledger().clone(), token_level_metadata().clone()))
-        .expect("unable to store data in stable storage");
-}
+    let data = StableStorageBorrowed {
+      ledger: ledger(),
+      token: token_level_metadata(),
+    };
+    ic::stable_store((data, )).expect("failed");
+  }
 
 fn restore_data_from_stable_store() {
-    let (ledger_stable, token_level_metadata_stable) =
-        ic_kit::ic::stable_restore::<(Ledger, TokenLevelMetadata)>()
-            .expect("unable to restore NFTLedger from stable storage");
-    *ledger() = ledger_stable;
-    *token_level_metadata() = token_level_metadata_stable;
+  let (data, ): (StableStorage, ) = ic::stable_restore().expect("failed");
+  ic::store(data.ledger);
+  ic::store(data.token);
 }
 
 #[init]

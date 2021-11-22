@@ -2,13 +2,13 @@ use crate::types::*;
 use crate::utils::*;
 
 use ic_kit::candid::CandidType;
-use serde::Deserialize;
 
 use std::collections::HashMap;
 use std::convert::Into;
 use std::default::Default;
+use serde::{Deserialize, Serialize};
 
-#[derive(CandidType, Clone, Default, Deserialize)]
+#[derive(CandidType, Clone, Default, Deserialize, Serialize)]
 pub struct Ledger {
     tokens: HashMap<TokenIndex, TokenMetadata>,
     user_tokens: HashMap<User, Vec<TokenIndex>>,

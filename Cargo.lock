@@ -985,6 +985,7 @@ dependencies = [
  "ic-kit",
  "serde",
  "serde_bytes",
+ "serde_cbor",
 ]
 
 [[package]]

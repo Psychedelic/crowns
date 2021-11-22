@@ -1,4 +1,5 @@
 use common::account_identifier::AccountIdentifierStruct;
+use crate::ledger::Ledger;
 
 use derive_new::*;
 use ic_kit::candid::CandidType;
@@ -70,26 +71,26 @@ pub type MetadataResult = Result<MetadataDesc, ApiError>;
 
 pub type MetadataDesc = Vec<MetadataPart>;
 
-#[derive(CandidType, Clone, Deserialize)]
+#[derive(CandidType, Clone, Deserialize, Serialize)]
 pub struct MetadataPart {
     pub purpose: MetadataPurpose,
     pub key_val_data: Vec<MetadataKeyVal>,
     pub data: Vec<u8>,
 }
 
-#[derive(CandidType, Clone, Deserialize)]
+#[derive(CandidType, Clone, Deserialize, Serialize)]
 pub enum MetadataPurpose {
     Preview,
     Rendered,
 }
 
-#[derive(CandidType, Clone, Deserialize)]
+#[derive(CandidType, Clone, Deserialize, Serialize)]
 pub struct MetadataKeyVal {
     pub key: String,
     pub val: MetadataVal,
 }
 
-#[derive(CandidType, Clone, Deserialize)]
+#[derive(CandidType, Clone, Deserialize, Serialize)]
 pub enum MetadataVal {
     TextContent(String),
     BlobContent(Vec<u8>),
@@ -156,7 +157,7 @@ pub struct MintReceiptPart {
 /// END DIP-721 ///
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, CandidType, Debug, Deserialize, Eq, Hash, PartialEq, Serialize )]
 pub enum User {
     address(AccountIdentifier),
     principal(Principal),
@@ -234,13 +235,13 @@ pub struct MintRequest {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize)]
+#[derive(Clone, CandidType, Deserialize, Serialize)]
 pub enum Metadata {
     fungible(FungibleMetadata),
     nonfungible(Option<MetadataContainer>),
 }
 
-#[derive(Clone, CandidType, Deserialize)]
+#[derive(Clone, CandidType, Deserialize, Serialize)]
 pub struct FungibleMetadata {
     name: String,
     symbol: String,
@@ -249,18 +250,18 @@ pub struct FungibleMetadata {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize, new)]
+#[derive(Clone, CandidType, Deserialize, Serialize, new)]
 pub enum MetadataContainer {
     data(Vec<MetadataValue>),
     blob(Blob),
     json(String),
 }
 
-#[derive(Clone, CandidType, Deserialize)]
+#[derive(Clone, CandidType, Deserialize, Serialize)]
 pub struct MetadataValue(String, Value);
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Deserialize)]
+#[derive(Clone, CandidType, Deserialize, Serialize)]
 pub enum Value {
     text(String),
     blob(Blob),
@@ -274,7 +275,7 @@ pub enum CommonError {
     Other(String),
 }
 
-#[derive(Clone, CandidType, Deserialize, new)]
+#[derive(Clone, CandidType, Deserialize, Serialize, new)]
 pub struct TokenMetadata {
     pub account_identifier: AccountIdentifier,
     pub metadata: Metadata,
@@ -283,7 +284,7 @@ pub struct TokenMetadata {
     pub metadata_desc: MetadataDesc,
 }
 
-#[derive(new, CandidType, Clone, Default, Deserialize)]
+#[derive(new, CandidType, Clone, Default, Deserialize, Serialize)]
 pub struct TokenLevelMetadata {
     pub owner: Option<Principal>,
     pub symbol: String,
@@ -330,4 +331,16 @@ fn get_detail_value(key: &str, details: Vec<(String, DetailValue)>) -> Option<De
 pub struct TxLog
 {
   pub tx_records: VecDeque<IndefiniteEvent>,
+}
+
+#[derive(CandidType, Serialize)]
+pub struct StableStorageBorrowed<'a> {
+  pub ledger: &'a Ledger,
+  pub token: &'a TokenLevelMetadata,
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct StableStorage {
+  pub ledger: Ledger,
+  pub token: TokenLevelMetadata,
 }
