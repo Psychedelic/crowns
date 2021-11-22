@@ -135,7 +135,7 @@ fn get_token_ids_for_user_dip721(user: Principal) -> Vec<u64> {
 
 #[update(name = "mintDip721")]
 async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt {
-    // onlyOwner();
+    onlyOwner();
     let response = ledger().mintNFT(&to, &metadata_desc).unwrap();
     let event = IndefiniteEventBuilder::new()
       .caller(caller())
