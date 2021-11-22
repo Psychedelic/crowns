@@ -285,7 +285,6 @@ fn restore_data_from_stable_store() {
 fn init(owner: Principal, symbol: String, name: String, history: Principal) {
     *token_level_metadata() = TokenLevelMetadata::new(Some(owner), symbol, name, Some(history));
     handshake(1_000_000_000_000, Some(history));
-    store_data_in_stable_store();
   }
 
 #[pre_upgrade]
