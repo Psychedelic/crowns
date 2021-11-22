@@ -3,13 +3,14 @@ use crate::types::*;
 use crate::utils::*;
 
 use ic_kit::ic::trap;
-
 use ic_kit::ic::caller;
 use ic_kit::macros::*;
 
 use cap_sdk::DetailValue;
 use cap_sdk::IndefiniteEventBuilder;
 use cap_sdk::handshake;
+
+use ic_cdk::api::stable::{StableReader, StableWriter};
 
 /// BEGIN DIP-721 ///
 #[query(name = "balanceOfDip721")]
