@@ -11,6 +11,12 @@ use cap_sdk::IndefiniteEventBuilder;
 use cap_sdk::handshake;
 use cap_sdk::insert;
 
+/// HEALTH-CHECK ///
+#[query]
+fn name() -> String {
+  String::from("NFT Canister")
+}
+
 /// BEGIN DIP-721 ///
 #[query(name = "balanceOfDip721")]
 fn balance_of_dip721(user: Principal) -> u64 {
