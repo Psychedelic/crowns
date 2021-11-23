@@ -272,6 +272,9 @@ type AccountIdentifier = text;
 
  type erc721_token =
  service {
+   // HEALTH-CHECK //
+   name: () -> (text) query;
+   
    // BEGIN DIP-721 //
    balanceOfDip721: (user: principal) -> (nat64) query;
    ownerOfDip721: (token_id: nat64) -> (OwnerResult) query;
