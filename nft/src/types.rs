@@ -1,5 +1,6 @@
-use common::account_identifier::AccountIdentifierStruct;
 use crate::ledger::Ledger;
+use crate::management::Fleek;
+use common::account_identifier::AccountIdentifierStruct;
 
 use derive_new::*;
 use ic_kit::candid::CandidType;
@@ -11,12 +12,12 @@ use std::collections::VecDeque;
 
 use cap_sdk::DetailValue;
 use cap_sdk::Event;
-use cap_std::dip721::DIP721TransactionType;
 use cap_sdk::IndefiniteEvent;
+use cap_std::dip721::DIP721TransactionType;
 
 pub use std::convert::{From, Into};
-pub use std::vec::Vec;
 pub use std::error::Error;
+pub use std::vec::Vec;
 
 pub type Balance = Nat;
 pub type Memo = Vec<u8>;
@@ -114,7 +115,6 @@ pub struct Transfer {
     pub to: Principal,
 }
 
-
 #[derive(CandidType, Deserialize)]
 pub struct TransferFrom {
     pub token_id: u64,
@@ -157,7 +157,7 @@ pub struct MintReceiptPart {
 /// END DIP-721 ///
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, CandidType, Debug, Deserialize, Eq, Hash, PartialEq, Serialize )]
+#[derive(Clone, CandidType, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum User {
     address(AccountIdentifier),
     principal(Principal),
@@ -316,31 +316,28 @@ pub struct TransactionsRequest {
 }
 
 fn get_detail_value(key: &str, details: Vec<(String, DetailValue)>) -> Option<DetailValue> {
-  let entry = details.iter().find(|&x| x.0.as_str() == key);
-  match entry {
-    Some(x) => {
-      Some(x.1.clone())
-    },
-    None => {
-      None
+    let entry = details.iter().find(|&x| x.0.as_str() == key);
+    match entry {
+        Some(x) => Some(x.1.clone()),
+        None => None,
     }
-  }
 }
 
 #[derive(Default)]
-pub struct TxLog
-{
-  pub tx_records: VecDeque<IndefiniteEvent>,
+pub struct TxLog {
+    pub tx_records: VecDeque<IndefiniteEvent>,
 }
 
 #[derive(CandidType)]
 pub struct StableStorageBorrowed<'a> {
-  pub ledger: &'a Ledger,
-  pub token: &'a TokenLevelMetadata,
+    pub ledger: &'a Ledger,
+    pub token: &'a TokenLevelMetadata,
+    pub fleek: &'a Fleek,
 }
 
 #[derive(CandidType, Deserialize)]
 pub struct StableStorage {
-  pub ledger: Ledger,
-  pub token: TokenLevelMetadata,
+    pub ledger: Ledger,
+    pub token: TokenLevelMetadata,
+    pub fleek: Fleek,
 }
