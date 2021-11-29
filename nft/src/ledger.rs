@@ -3,10 +3,10 @@ use crate::utils::*;
 
 use ic_kit::candid::CandidType;
 
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::convert::Into;
 use std::default::Default;
-use serde::Deserialize;
 
 #[derive(CandidType, Clone, Default, Deserialize)]
 pub struct Ledger {
@@ -77,16 +77,14 @@ impl Ledger {
     }
 
     pub fn get_token_ids_for_user(&self, user: &Principal) -> Vec<u64> {
-      ledger()
-          .user_tokens
-          .get(&User::principal(*user))
-          .unwrap_or(&vec![])
-          .iter()
-          .map(|token_index| {
-              token_index.clone() as u64
-          })
-          .collect()
-  }
+        ledger()
+            .user_tokens
+            .get(&User::principal(*user))
+            .unwrap_or(&vec![])
+            .iter()
+            .map(|token_index| token_index.clone() as u64)
+            .collect()
+    }
 
     // END DIP-721 //
 

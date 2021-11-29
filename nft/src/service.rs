@@ -1,20 +1,21 @@
+use crate::management::is_fleek;
+use crate::management::Fleek;
 use crate::types::*;
 use crate::utils::*;
 
-use ic_kit::ic::trap;
-use ic_kit::ic::caller;
 use ic_kit::ic;
+use ic_kit::ic::caller;
+use ic_kit::ic::trap;
 use ic_kit::macros::*;
 
+use cap_sdk::handshake;
 use cap_sdk::DetailValue;
 use cap_sdk::IndefiniteEventBuilder;
-use cap_sdk::handshake;
-use cap_sdk::insert;
 
 /// HEALTH-CHECK ///
 #[query]
 fn name() -> String {
-  String::from("NFT Canister")
+    String::from("NFT Canister")
 }
 
 /// BEGIN DIP-721 ///
@@ -30,7 +31,9 @@ fn owner_of_dip721(token_id: u64) -> Result<Principal, ApiError> {
 
 #[update(name = "safeTransferFromDip721")]
 async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     assert_ne!(
         to,
         Principal::from_slice(&[0; 29]),
@@ -38,32 +41,32 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
     );
 
     ledger().transfer(
-      &User::principal(caller()),
-      &User::principal(to),
-      &token_id.to_string(),
+        &User::principal(caller()),
+        &User::principal(to),
+        &token_id.to_string(),
     );
 
     let event = IndefiniteEventBuilder::new()
-      .caller(caller())
-      .operation("transfer_from")
-      .details(
-        vec![
-          ("from".into(), DetailValue::Principal(caller())),
-          ("to".into(), DetailValue::Principal(to)),
-          ("token_id".into(), DetailValue::U64(token_id))
-        ]
-      )
-      .build().unwrap();
+        .caller(caller())
+        .operation("transfer")
+        .details(vec![
+            ("from".into(), DetailValue::Principal(caller())),
+            ("to".into(), DetailValue::Principal(to)),
+            ("token_id".into(), DetailValue::U64(token_id)),
+        ])
+        .build()
+        .unwrap();
 
-    // let tx_id = insert_into_cap(event).await.unwrap();
-    let tx_id = insert(event).await.unwrap();
+    let tx_id = insert_into_cap(event).await.unwrap();
 
-    Ok(Nat::from(2))
+    Ok(tx_id.into())
 }
 
 #[update(name = "transferFromDip721")]
 async fn transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     assert_ne!(
         caller(),
         to,
@@ -77,17 +80,16 @@ async fn transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) ->
     );
 
     let event = IndefiniteEventBuilder::new()
-      .caller(caller())
-      .operation("transfer_from")
-      .details(
-        vec![
-          ("from".into(), DetailValue::Principal(caller())),
-          ("to".into(), DetailValue::Principal(to)),
-          ("token_id".into(), DetailValue::U64(token_id))
-        ]
-      )
-      .build().unwrap();
-    
+        .caller(caller())
+        .operation("transfer")
+        .details(vec![
+            ("from".into(), DetailValue::Principal(caller())),
+            ("to".into(), DetailValue::Principal(to)),
+            ("token_id".into(), DetailValue::U64(token_id)),
+        ])
+        .build()
+        .unwrap();
+
     let tx_id = insert_into_cap(event).await.unwrap();
 
     Ok(tx_id)
@@ -142,25 +144,25 @@ fn get_token_ids_for_user_dip721(user: Principal) -> Vec<u64> {
 
 #[update(name = "mintDip721")]
 async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt {
-    onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     let response = ledger().mintNFT(&to, &metadata_desc).unwrap();
     let event = IndefiniteEventBuilder::new()
-      .caller(caller())
-      .operation("mint")
-      .details(
-        vec![
-          ("to".into(), DetailValue::Principal(to)),
-          ("token_id".into(), DetailValue::U64(response.token_id))
-        ]
-      )
-      .build().unwrap();
+        .caller(caller())
+        .operation("mint")
+        .details(vec![
+            ("to".into(), DetailValue::Principal(to)),
+            ("token_id".into(), DetailValue::U64(response.token_id)),
+        ])
+        .build()
+        .unwrap();
 
-    // let tx_id = insert_into_cap(event).await.unwrap();
-    // let tx_id = insert(event).await.unwrap();
+    let tx_id = insert_into_cap(event).await.unwrap();
 
     Ok(MintReceiptPart {
-      token_id: response.token_id,
-      id: Nat::from(2)
+        token_id: response.token_id,
+        id: tx_id.into(),
     })
 }
 
@@ -168,7 +170,9 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
 
 #[update]
 async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(TransferError::Unauthorized("Not Admin".to_string()));
+    }
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
     assert_ne!(
@@ -187,16 +191,18 @@ async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
     let token_id = &transfer_request.token.parse::<u64>().unwrap();
 
     let event = IndefiniteEventBuilder::new()
-      .caller(caller())
-      .operation("transfer_from")
-      .details(
-        vec![
-          ("from".into(), user_to_detail_value(User::principal(caller()))),
-          ("to".into(), user_to_detail_value(transfer_request.to)),
-          ("token_id".into(), DetailValue::U64(*token_id)),
-        ]
-      )
-      .build().unwrap();
+        .caller(caller())
+        .operation("transfer")
+        .details(vec![
+            (
+                "from".into(),
+                user_to_detail_value(User::principal(caller())),
+            ),
+            ("to".into(), user_to_detail_value(transfer_request.to)),
+            ("token_id".into(), DetailValue::U64(*token_id)),
+        ])
+        .build()
+        .unwrap();
 
     let tx_id = insert_into_cap(event).await.unwrap();
 
@@ -205,25 +211,26 @@ async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
 
 #[allow(non_snake_case, unreachable_code, unused_variables)]
 #[update]
-async fn mintNFT(mint_request: MintRequest) -> TokenIdentifier {
+async fn mintNFT(mint_request: MintRequest) -> Option<TokenIdentifier> {
     trap("Disabled as current EXT metadata doesn't allow multiple assets per token");
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return None;
+    }
     expect_principal(&mint_request.to);
     expect_caller(&token_level_metadata().owner.expect("token owner not set"));
 
     let event = IndefiniteEventBuilder::new()
-      .caller(caller())
-      .operation("mint")
-      .details(
-        vec![
-          ("to".into(), user_to_detail_value(mint_request.to)),
-          ("token_id".into(), DetailValue::U64(123))
-        ]
-      )
-      .build().unwrap();
+        .caller(caller())
+        .operation("mint")
+        .details(vec![
+            ("to".into(), user_to_detail_value(mint_request.to)),
+            ("token_id".into(), DetailValue::U64(123)),
+        ])
+        .build()
+        .unwrap();
 
     let tx_id = insert_into_cap(event).await.unwrap();
-    tx_id.to_string()
+    Some(tx_id.to_string())
 }
 
 #[query]
@@ -251,49 +258,53 @@ fn metadata(token_identifier: TokenIdentifier) -> MetadataReturn {
 }
 
 #[update]
-async fn add(transfer_request: TransferRequest) -> TransactionId {
-    // onlyOwner();
+async fn add(transfer_request: TransferRequest) -> Option<TransactionId> {
+    if !is_fleek(&ic::caller()) {
+        return None;
+    }
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
 
     let token_id = &transfer_request.token.parse::<u64>().unwrap();
 
     let event = IndefiniteEventBuilder::new()
-    .caller(caller())
-    .operation("transfer_from")
-    .details(
-      vec![
-        ("to".into(), user_to_detail_value(transfer_request.to)),
-        ("from".into(), user_to_detail_value(transfer_request.from)),
-        ("token_id".into(), DetailValue::U64(*token_id)),
-      ]
-    )
-    .build().unwrap();
+        .caller(caller())
+        .operation("transfer_from")
+        .details(vec![
+            ("to".into(), user_to_detail_value(transfer_request.to)),
+            ("from".into(), user_to_detail_value(transfer_request.from)),
+            ("token_id".into(), DetailValue::U64(*token_id)),
+        ])
+        .build()
+        .unwrap();
 
     let tx_id = insert_into_cap(event).await.unwrap();
 
-    Nat::from(tx_id)
-  }
+    Some(Nat::from(tx_id))
+}
 
 fn store_data_in_stable_store() {
     let data = StableStorageBorrowed {
-      ledger: ledger(),
-      token: token_level_metadata(),
+        ledger: ledger(),
+        token: token_level_metadata(),
+        fleek: fleek_db(),
     };
-    ic::stable_store((data, )).expect("failed");
-  }
+    ic::stable_store((data,)).expect("failed");
+}
 
 fn restore_data_from_stable_store() {
-  let (data, ): (StableStorage, ) = ic::stable_restore().expect("failed");
-  ic::store(data.ledger);
-  ic::store(data.token);
+    let (data,): (StableStorage,) = ic::stable_restore().expect("failed");
+    ic::store(data.ledger);
+    ic::store(data.token);
+    ic::store(data.fleek);
 }
 
 #[init]
 fn init(owner: Principal, symbol: String, name: String, history: Principal) {
+    ic::store(Fleek(vec![ic::caller()]));
     *token_level_metadata() = TokenLevelMetadata::new(Some(owner), symbol, name, Some(history));
     handshake(1_000_000_000_000, Some(history));
-  }
+}
 
 #[pre_upgrade]
 fn pre_upgrade() {
