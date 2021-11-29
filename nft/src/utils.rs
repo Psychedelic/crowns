@@ -121,7 +121,3 @@ pub async fn insert_into_cap_priv(tx_record: IndefiniteEvent) -> TxReceipt {
 pub fn tx_log<'a>() -> &'a mut TxLog {
     ic_kit::ic::get_mut::<TxLog>()
 }
-
-pub fn onlyOwner() {
-    assert_eq!(token_level_metadata().owner.unwrap(), caller());
-}

@@ -1,4 +1,5 @@
 use crate::management::Fleek;
+use crate::management::is_fleek;
 use crate::types::*;
 use crate::utils::*;
 
@@ -31,7 +32,9 @@ fn owner_of_dip721(token_id: u64) -> Result<Principal, ApiError> {
 
 #[update(name = "safeTransferFromDip721")]
 async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     assert_ne!(
         to,
         Principal::from_slice(&[0; 29]),
@@ -63,7 +66,9 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
 
 #[update(name = "transferFromDip721")]
 async fn transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) -> TxReceipt {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     assert_ne!(
         caller(),
         to,
@@ -141,7 +146,9 @@ fn get_token_ids_for_user_dip721(user: Principal) -> Vec<u64> {
 
 #[update(name = "mintDip721")]
 async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt {
-    onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
     let response = ledger().mintNFT(&to, &metadata_desc).unwrap();
     let event = IndefiniteEventBuilder::new()
         .caller(caller())
@@ -166,7 +173,9 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
 
 #[update]
 async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return Err(TransferError::Unauthorized("Not Admin".to_string()));
+    }
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
     assert_ne!(
