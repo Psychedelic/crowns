@@ -48,7 +48,7 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
 
     let event = IndefiniteEventBuilder::new()
         .caller(caller())
-        .operation("transfer_from")
+        .operation("transfer")
         .details(vec![
             ("from".into(), DetailValue::Principal(caller())),
             ("to".into(), DetailValue::Principal(to)),
@@ -81,7 +81,7 @@ async fn transfer_from_dip721(_from: Principal, to: Principal, token_id: u64) ->
 
     let event = IndefiniteEventBuilder::new()
         .caller(caller())
-        .operation("transfer_from")
+        .operation("transfer")
         .details(vec![
             ("from".into(), DetailValue::Principal(caller())),
             ("to".into(), DetailValue::Principal(to)),
@@ -192,7 +192,7 @@ async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
 
     let event = IndefiniteEventBuilder::new()
         .caller(caller())
-        .operation("transfer_from")
+        .operation("transfer")
         .details(vec![
             (
                 "from".into(),
