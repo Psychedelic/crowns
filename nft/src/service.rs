@@ -9,7 +9,6 @@ use ic_kit::ic::trap;
 use ic_kit::macros::*;
 
 use cap_sdk::handshake;
-use cap_sdk::insert;
 use cap_sdk::DetailValue;
 use cap_sdk::IndefiniteEventBuilder;
 
@@ -58,10 +57,9 @@ async fn safe_transfer_from_dip721(_from: Principal, to: Principal, token_id: u6
         .build()
         .unwrap();
 
-    // let tx_id = insert_into_cap(event).await.unwrap();
-    let tx_id = insert(event).await.unwrap();
+    let tx_id = insert_into_cap(event).await.unwrap();
 
-    Ok(Nat::from(2))
+    Ok(tx_id.into())
 }
 
 #[update(name = "transferFromDip721")]
@@ -160,12 +158,11 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
         .build()
         .unwrap();
 
-    // let tx_id = insert_into_cap(event).await.unwrap();
-    // let tx_id = insert(event).await.unwrap();
+    let tx_id = insert_into_cap(event).await.unwrap();
 
     Ok(MintReceiptPart {
         token_id: response.token_id,
-        id: Nat::from(2),
+        id: tx_id.into(),
     })
 }
 
@@ -214,9 +211,11 @@ async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
 
 #[allow(non_snake_case, unreachable_code, unused_variables)]
 #[update]
-async fn mintNFT(mint_request: MintRequest) -> TokenIdentifier {
+async fn mintNFT(mint_request: MintRequest) -> Option<TokenIdentifier> {
     trap("Disabled as current EXT metadata doesn't allow multiple assets per token");
-    // onlyOwner();
+    if !is_fleek(&ic::caller()) {
+        return None;
+    }
     expect_principal(&mint_request.to);
     expect_caller(&token_level_metadata().owner.expect("token owner not set"));
 
@@ -231,7 +230,7 @@ async fn mintNFT(mint_request: MintRequest) -> TokenIdentifier {
         .unwrap();
 
     let tx_id = insert_into_cap(event).await.unwrap();
-    tx_id.to_string()
+    Some(tx_id.to_string())
 }
 
 #[query]
@@ -259,8 +258,10 @@ fn metadata(token_identifier: TokenIdentifier) -> MetadataReturn {
 }
 
 #[update]
-async fn add(transfer_request: TransferRequest) -> TransactionId {
-    // onlyOwner();
+async fn add(transfer_request: TransferRequest) -> Option<TransactionId> {
+    if !is_fleek(&ic::caller()) {
+        return None;
+    }
     expect_principal(&transfer_request.from);
     expect_principal(&transfer_request.to);
 
@@ -279,7 +280,7 @@ async fn add(transfer_request: TransferRequest) -> TransactionId {
 
     let tx_id = insert_into_cap(event).await.unwrap();
 
-    Nat::from(tx_id)
+    Some(Nat::from(tx_id))
 }
 
 fn store_data_in_stable_store() {
