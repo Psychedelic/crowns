@@ -29,7 +29,6 @@ pub fn fleek_db<'a>() -> &'a mut Fleek {
     ic_kit::ic::get_mut::<Fleek>()
 }
 
-
 pub fn cap_canister_id() -> Principal {
     ic_kit::ic::get_mut::<TokenLevelMetadata>().history.unwrap()
 }

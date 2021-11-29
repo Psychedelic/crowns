@@ -1,5 +1,5 @@
-use crate::management::Fleek;
 use crate::management::is_fleek;
+use crate::management::Fleek;
 use crate::types::*;
 use crate::utils::*;
 
@@ -287,7 +287,7 @@ fn store_data_in_stable_store() {
     let data = StableStorageBorrowed {
         ledger: ledger(),
         token: token_level_metadata(),
-        fleek: fleek_db()
+        fleek: fleek_db(),
     };
     ic::stable_store((data,)).expect("failed");
 }
@@ -301,9 +301,9 @@ fn restore_data_from_stable_store() {
 
 #[init]
 fn init(owner: Principal, symbol: String, name: String, history: Principal) {
-  ic::store(Fleek(vec![ic::caller()]));
-  *token_level_metadata() = TokenLevelMetadata::new(Some(owner), symbol, name, Some(history));
-  handshake(1_000_000_000_000, Some(history));
+    ic::store(Fleek(vec![ic::caller()]));
+    *token_level_metadata() = TokenLevelMetadata::new(Some(owner), symbol, name, Some(history));
+    handshake(1_000_000_000_000, Some(history));
 }
 
 #[pre_upgrade]
