@@ -3,11 +3,11 @@ use crate::management::Fleek;
 use crate::types::*;
 use crate::utils::*;
 
+use cap_sdk::CapEnv;
 use ic_kit::ic;
 use ic_kit::ic::caller;
 use ic_kit::ic::trap;
 use ic_kit::macros::*;
-use cap_sdk::CapEnv;
 
 use cap_sdk::handshake;
 use cap_sdk::DetailValue;
@@ -290,11 +290,12 @@ fn store_data_in_stable_store() {
         token: token_level_metadata(),
         fleek: fleek_db(),
     };
-    ic::stable_store((data, CapEnv::to_archive(),)).expect("failed");
+    ic::stable_store((data, CapEnv::to_archive())).expect("failed");
 }
 
 fn restore_data_from_stable_store() {
-    let ((data,capenv)): (StableStorage,CapEnv) = ic::stable_restore::<(StableStorage, CapEnv)>().expect("failed");
+    let ((data, capenv)): (StableStorage, CapEnv) =
+        ic::stable_restore::<(StableStorage, CapEnv)>().expect("failed");
     ic::store(data.ledger);
     ic::store(data.token);
     ic::store(data.fleek);

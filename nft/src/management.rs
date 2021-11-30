@@ -1,7 +1,7 @@
-use ic_kit::{candid::CandidType, ic, Principal};
-use serde::Deserialize;
 use crate::types::*;
 use ic_kit::macros::*;
+use ic_kit::{candid::CandidType, ic, Principal};
+use serde::Deserialize;
 
 #[derive(CandidType, Deserialize)]
 pub struct Fleek(pub Vec<Principal>);
