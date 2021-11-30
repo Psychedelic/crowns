@@ -8,6 +8,11 @@
    Other;
  };
 
+type AddAdminResponse = variant {
+    Ok  : null;
+    Err : ApiError;
+};
+
  type OwnerResult =
  variant {
    Err: ApiError;
@@ -299,6 +304,8 @@ type AccountIdentifier = text;
    supply: (TokenIdentifier) -> (BalanceReturn) query;
    metadata: (TokenIdentifier) -> (MetadataReturn)  query;
    add: (TransferRequest) -> (TransactionId);
+
+   add_admin: (principal) -> (AddAdminResponse);
  };
 
 service : (principal, text, text, principal) -> erc721_token
