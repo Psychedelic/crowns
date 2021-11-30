@@ -344,24 +344,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "cap-common"
+version = "0.1.0"
+source = "git+https://github.com/Psychedelic/cap?branch=main#85d135eb43433adef9b6681260ce64eaa5dbe48c"
+dependencies = [
+ "async-std",
+ "ic-cdk",
+ "ic-certified-map",
+ "ic-kit",
+ "serde",
+ "serde_bytes",
+ "serde_cbor",
+ "sha2",
+]
+
+[[package]]
 name = "cap-sdk"
 version = "0.1.0-alpha1"
-source = "git+https://github.com/Psychedelic/cap?branch=cap-sdk#942985cd678ed30e78d69ef72bba66764ab1e528"
+source = "git+https://github.com/Psychedelic/cap?branch=main#85d135eb43433adef9b6681260ce64eaa5dbe48c"
 dependencies = [
  "async-stream",
  "cap-sdk-core",
  "futures",
+ "ic-cdk",
  "ic-kit",
  "lazy_static",
+ "serde",
  "thiserror",
 ]
 
 [[package]]
 name = "cap-sdk-core"
 version = "0.1.0-alpha1"
-source = "git+https://github.com/Psychedelic/cap?branch=cap-sdk#942985cd678ed30e78d69ef72bba66764ab1e528"
+source = "git+https://github.com/Psychedelic/cap?branch=main#85d135eb43433adef9b6681260ce64eaa5dbe48c"
 dependencies = [
- "ic-history-common",
+ "cap-common",
+ "ic-cdk",
  "ic-kit",
  "serde",
  "thiserror",
@@ -370,7 +388,7 @@ dependencies = [
 [[package]]
 name = "cap-standards"
 version = "0.1.0-alpha1"
-source = "git+https://github.com/Psychedelic/cap?branch=cap-sdk#942985cd678ed30e78d69ef72bba66764ab1e528"
+source = "git+https://github.com/Psychedelic/cap?branch=main#85d135eb43433adef9b6681260ce64eaa5dbe48c"
 dependencies = [
  "bincode",
  "candid",
@@ -775,21 +793,6 @@ checksum = "54640ea6dc0dd1c7cddec8586f42c81aa5a02edd0b82ad7b96360ee5b591d7b6"
 dependencies = [
  "serde",
  "serde_bytes",
- "sha2",
-]
-
-[[package]]
-name = "ic-history-common"
-version = "0.1.0"
-source = "git+https://github.com/Psychedelic/cap?branch=cap-sdk#942985cd678ed30e78d69ef72bba66764ab1e528"
-dependencies = [
- "async-std",
- "ic-cdk",
- "ic-certified-map",
- "ic-kit",
- "serde",
- "serde_bytes",
- "serde_cbor",
  "sha2",
 ]
 

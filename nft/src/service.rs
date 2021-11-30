@@ -7,6 +7,7 @@ use ic_kit::ic;
 use ic_kit::ic::caller;
 use ic_kit::ic::trap;
 use ic_kit::macros::*;
+use cap_sdk::CapEnv;
 
 use cap_sdk::handshake;
 use cap_sdk::DetailValue;
@@ -289,21 +290,22 @@ fn store_data_in_stable_store() {
         token: token_level_metadata(),
         fleek: fleek_db(),
     };
-    ic::stable_store((data,)).expect("failed");
+    ic::stable_store((data, CapEnv::to_archive(),)).expect("failed");
 }
 
 fn restore_data_from_stable_store() {
-    let (data,): (StableStorage,) = ic::stable_restore().expect("failed");
+    let ((data,capenv)): (StableStorage,CapEnv) = ic::stable_restore::<(StableStorage, CapEnv)>().expect("failed");
     ic::store(data.ledger);
     ic::store(data.token);
     ic::store(data.fleek);
+    CapEnv::load_from_archive(capenv);
 }
 
 #[init]
 fn init(owner: Principal, symbol: String, name: String, history: Principal) {
     ic::store(Fleek(vec![ic::caller()]));
     *token_level_metadata() = TokenLevelMetadata::new(Some(owner), symbol, name, Some(history));
-    handshake(1_000_000_000_000, Some(history));
+    handshake(10_000_000_000_000, Some(history));
 }
 
 #[pre_upgrade]
