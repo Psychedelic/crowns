@@ -113,9 +113,9 @@ fn init(args: Option<InitArgs>) {
                     metadata.owners.insert(owner);
                 }
             }
-            metadata.created_at = time();
-            metadata.upgraded_at = time();
         }
+        metadata.created_at = time();
+        metadata.upgraded_at = time();
     });
 }
 
@@ -194,7 +194,6 @@ fn total_supply() -> Nat {
 enum SupportedInterface {
     Approval,
     Mint,
-    Burn,
     TransactionHistory,
 }
 
@@ -204,7 +203,6 @@ fn supported_interfaces() -> Vec<SupportedInterface> {
     vec![
         SupportedInterface::Approval,
         SupportedInterface::Mint,
-        SupportedInterface::Burn,
         SupportedInterface::TransactionHistory,
     ]
 }

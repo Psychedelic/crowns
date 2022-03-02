@@ -43,7 +43,7 @@ test("CRUD - OK", async t => {
     t.deepEqual(result.owners, [canisterOwnerIdentity.getPrincipal()]);
   });
   (await Promise.all(allActors.map(actor => actor.supportedInterfaces()))).forEach(result => {
-    t.deepEqual(result, [{Approval: null}, {Mint: null}, {Burn: null}, {TransactionHistory: null}]);
+    t.deepEqual(result, [{Approval: null}, {Mint: null}, {TransactionHistory: null}]);
   });
 });
 

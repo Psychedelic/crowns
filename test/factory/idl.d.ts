@@ -52,8 +52,7 @@ export type Result_6 = { 'Ok' : Principal } |
   { 'Err' : NftError };
 export type Result_7 = { 'Ok' : TxEvent } |
   { 'Err' : NftError };
-export type SupportedInterface = { 'Burn' : null } |
-  { 'Mint' : null } |
+export type SupportedInterface = { 'Mint' : null } |
   { 'Approval' : null } |
   { 'TransactionHistory' : null };
 export interface TokenMetadata {

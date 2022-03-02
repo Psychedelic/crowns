@@ -47,7 +47,7 @@ type Result_4 = variant { Ok : bool; Err : NftError };
 type Result_5 = variant { Ok : opt principal; Err : NftError };
 type Result_6 = variant { Ok : principal; Err : NftError };
 type Result_7 = variant { Ok : TxEvent; Err : NftError };
-type SupportedInterface = variant { Burn; Mint; Approval; TransactionHistory };
+type SupportedInterface = variant { Mint; Approval; TransactionHistory };
 type TokenMetadata = record {
   transferred_at : opt nat64;
   transferred_by : opt principal;

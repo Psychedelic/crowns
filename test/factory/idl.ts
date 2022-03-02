@@ -65,7 +65,6 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result_6 = IDL.Variant({ 'Ok' : IDL.Principal, 'Err' : NftError });
   const SupportedInterface = IDL.Variant({
-    'Burn' : IDL.Null,
     'Mint' : IDL.Null,
     'Approval' : IDL.Null,
     'TransactionHistory' : IDL.Null,
