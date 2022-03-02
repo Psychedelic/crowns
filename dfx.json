@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "dfx": "0.8.4",
+  "canisters": {
+    "crowns": {
+      "package": "crowns",
+      "candid": "crowns.did",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "bind": "ic0.app"
+    }
+  }
+}
