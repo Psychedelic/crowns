@@ -101,6 +101,7 @@ export interface _SERVICE {
   'symbol' : () => Promise<[] | [string]>,
   'tokenMetadata' : (arg_0: string) => Promise<Result_6>,
   'totalSupply' : () => Promise<bigint>,
+  'totalTransactions' : () => Promise<bigint>,
   'transaction' : (arg_0: bigint) => Promise<Result_7>,
   'transfer' : (arg_0: Principal, arg_1: string) => Promise<Result>,
   'transferFrom' : (

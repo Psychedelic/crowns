@@ -674,8 +674,8 @@ fn mint(
     })
 }
 
-#[update(name = "transaction")]
-#[candid_method(update, rename = "transaction")]
+#[query(name = "transaction")]
+#[candid_method(query, rename = "transaction")]
 fn transaction(tx_id: Nat) -> Result<TxEvent, NftError> {
     let index = tx_id
         .0
@@ -689,6 +689,12 @@ fn transaction(tx_id: Nat) -> Result<TxEvent, NftError> {
             .cloned()
             .ok_or(NftError::TxNotFound)
     })
+}
+
+#[query(name = "totalTransactions")]
+#[candid_method(query, rename = "totalTransactions")]
+fn total_transactions() -> Nat {
+    LEDGER.with(|ledger| ledger.borrow().tx_records.len().into())
 }
 
 // NOTE:
@@ -741,4 +747,3 @@ fn main() {
 // TODO:
 // - notification
 // - consider support: multiple operators per owner
-// - totalTransaction

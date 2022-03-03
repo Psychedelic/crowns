@@ -88,7 +88,8 @@ service : (opt InitArgs) -> {
   symbol : () -> (opt text) query;
   tokenMetadata : (text) -> (Result_6) query;
   totalSupply : () -> (nat) query;
-  transaction : (nat) -> (Result_7);
+  totalTransactions : () -> (nat) query;
+  transaction : (nat) -> (Result_7) query;
   transfer : (principal, text) -> (Result);
   transferFrom : (principal, principal, text) -> (Result);
 }

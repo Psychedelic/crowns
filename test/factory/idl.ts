@@ -112,7 +112,8 @@ export const idlFactory = ({ IDL }) => {
     'symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'tokenMetadata' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'totalSupply' : IDL.Func([], [IDL.Nat], ['query']),
-    'transaction' : IDL.Func([IDL.Nat], [Result_7], []),
+    'totalTransactions' : IDL.Func([], [IDL.Nat], ['query']),
+    'transaction' : IDL.Func([IDL.Nat], [Result_7], ['query']),
     'transfer' : IDL.Func([IDL.Principal, IDL.Text], [Result], []),
     'transferFrom' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Text],
