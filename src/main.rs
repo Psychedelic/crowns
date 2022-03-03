@@ -1,5 +1,3 @@
-mod legacy;
-
 use ic_cdk::api::{caller, time, trap};
 use ic_cdk::export::candid::{candid_method, CandidType, Deserialize, Int, Nat};
 use ic_cdk::export::Principal;
@@ -743,3 +741,4 @@ fn main() {
 // TODO:
 // - notification
 // - consider support: multiple operators per owner
+// - totalTransaction

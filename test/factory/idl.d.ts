@@ -38,17 +38,17 @@ export type NftError = { 'SelfTransfer' : null } |
   { 'Other' : string };
 export type Result = { 'Ok' : bigint } |
   { 'Err' : NftError };
-export type Result_1 = { 'Ok' : TokenMetadata } |
+export type Result_1 = { 'Ok' : boolean } |
   { 'Err' : NftError };
-export type Result_2 = { 'Ok' : Array<TokenMetadata> } |
+export type Result_2 = { 'Ok' : [] | [Principal] } |
   { 'Err' : NftError };
 export type Result_3 = { 'Ok' : Array<string> } |
   { 'Err' : NftError };
-export type Result_4 = { 'Ok' : boolean } |
+export type Result_4 = { 'Ok' : Array<TokenMetadata> } |
   { 'Err' : NftError };
-export type Result_5 = { 'Ok' : [] | [Principal] } |
+export type Result_5 = { 'Ok' : Principal } |
   { 'Err' : NftError };
-export type Result_6 = { 'Ok' : Principal } |
+export type Result_6 = { 'Ok' : TokenMetadata } |
   { 'Err' : NftError };
 export type Result_7 = { 'Ok' : TxEvent } |
   { 'Err' : NftError };
@@ -73,61 +73,37 @@ export interface TxEvent {
 }
 export interface _SERVICE {
   'approve' : (arg_0: Principal, arg_1: string) => Promise<Result>,
-  'approveDip721' : (arg_0: Principal, arg_1: string) => Promise<Result>,
   'balanceOf' : (arg_0: Principal) => Promise<Result>,
-  'balanceOfDip721' : (arg_0: Principal) => Promise<Result>,
-  'getMetadataDip721' : (arg_0: string) => Promise<Result_1>,
-  'getMetadataForUserDip721' : (arg_0: Principal) => Promise<Result_2>,
-  'getTokenIdsForUserDip721' : (arg_0: Principal) => Promise<Result_3>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<
-      Result_4
+      Result_1
     >,
   'logo' : () => Promise<[] | [string]>,
-  'logoDip721' : () => Promise<[] | [string]>,
   'metadata' : () => Promise<Metadata>,
   'mint' : (
       arg_0: Principal,
       arg_1: string,
       arg_2: Array<[string, GenericValue]>,
     ) => Promise<Result>,
-  'mintDip721' : (
-      arg_0: Principal,
-      arg_1: string,
-      arg_2: Array<[string, GenericValue]>,
-    ) => Promise<Result>,
   'name' : () => Promise<[] | [string]>,
-  'nameDip721' : () => Promise<[] | [string]>,
-  'operatorOf' : (arg_0: string) => Promise<Result_5>,
+  'operatorOf' : (arg_0: string) => Promise<Result_2>,
   'operatorTokenIds' : (arg_0: Principal) => Promise<Result_3>,
-  'operatorTokenMetadata' : (arg_0: Principal) => Promise<Result_2>,
-  'ownerOf' : (arg_0: string) => Promise<Result_6>,
-  'ownerOfDip721' : (arg_0: string) => Promise<Result_6>,
+  'operatorTokenMetadata' : (arg_0: Principal) => Promise<Result_4>,
+  'ownerOf' : (arg_0: string) => Promise<Result_5>,
   'ownerTokenIds' : (arg_0: Principal) => Promise<Result_3>,
-  'ownerTokenMetadata' : (arg_0: Principal) => Promise<Result_2>,
+  'ownerTokenMetadata' : (arg_0: Principal) => Promise<Result_4>,
   'owners' : () => Promise<Array<Principal>>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<Result>,
   'setLogo' : (arg_0: string) => Promise<undefined>,
-  'setLogoDip721' : (arg_0: string) => Promise<undefined>,
   'setName' : (arg_0: string) => Promise<undefined>,
-  'setNameDip721' : (arg_0: string) => Promise<undefined>,
   'setOwners' : (arg_0: Array<Principal>) => Promise<undefined>,
   'setSymbol' : (arg_0: string) => Promise<undefined>,
-  'setSymbolDip721' : (arg_0: string) => Promise<undefined>,
   'supportedInterfaces' : () => Promise<Array<SupportedInterface>>,
-  'supportedInterfacesDip721' : () => Promise<Array<SupportedInterface>>,
   'symbol' : () => Promise<[] | [string]>,
-  'symbolDip721' : () => Promise<[] | [string]>,
-  'tokenMetadata' : (arg_0: string) => Promise<Result_1>,
+  'tokenMetadata' : (arg_0: string) => Promise<Result_6>,
   'totalSupply' : () => Promise<bigint>,
-  'totalSupplyDip721' : () => Promise<bigint>,
   'transaction' : (arg_0: bigint) => Promise<Result_7>,
   'transfer' : (arg_0: Principal, arg_1: string) => Promise<Result>,
   'transferFrom' : (
-      arg_0: Principal,
-      arg_1: Principal,
-      arg_2: string,
-    ) => Promise<Result>,
-  'transferFromDip721' : (
       arg_0: Principal,
       arg_1: Principal,
       arg_2: string,
