@@ -59,7 +59,7 @@ struct TokenMetadata {
 
 #[derive(CandidType, Default, Deserialize, Clone)]
 struct Ledger {
-    tokens: HashMap<TokenIdentifier, TokenMetadata>,
+    tokens: HashMap<TokenIdentifier, TokenMetadata>, // recommend to have sequential id
     owners: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
     operators: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
     tx_records: Vec<TxEvent>,

@@ -23,5 +23,5 @@ const chunks = data.reduce((all, one, i) => {
 
 for (let i = 0; i < chunks.length; i++) {
   console.log("processing chunk:", i);
-  await Promise.all(chunks[i].map(c => actor.mint(Principal.fromText(c.to), c.id, c.properties)))
+  await Promise.all(chunks[i].map(c => actor.mint(Principal.fromText(c.to), BigInt(c.id), c.properties)))
 }
