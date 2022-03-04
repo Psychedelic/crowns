@@ -42,7 +42,7 @@ export type Result_1 = { 'Ok' : boolean } |
   { 'Err' : NftError };
 export type Result_2 = { 'Ok' : [] | [Principal] } |
   { 'Err' : NftError };
-export type Result_3 = { 'Ok' : Array<string> } |
+export type Result_3 = { 'Ok' : Array<bigint> } |
   { 'Err' : NftError };
 export type Result_4 = { 'Ok' : Array<TokenMetadata> } |
   { 'Err' : NftError };
@@ -61,7 +61,7 @@ export interface TokenMetadata {
   'owner' : Principal,
   'operator' : [] | [Principal],
   'properties' : Array<[string, GenericValue]>,
-  'token_identifier' : string,
+  'token_identifier' : bigint,
   'minted_at' : bigint,
   'minted_by' : Principal,
 }
@@ -72,7 +72,7 @@ export interface TxEvent {
   'caller' : Principal,
 }
 export interface _SERVICE {
-  'approve' : (arg_0: Principal, arg_1: string) => Promise<Result>,
+  'approve' : (arg_0: Principal, arg_1: bigint) => Promise<Result>,
   'balanceOf' : (arg_0: Principal) => Promise<Result>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<
       Result_1
@@ -81,14 +81,14 @@ export interface _SERVICE {
   'metadata' : () => Promise<Metadata>,
   'mint' : (
       arg_0: Principal,
-      arg_1: string,
+      arg_1: bigint,
       arg_2: Array<[string, GenericValue]>,
     ) => Promise<Result>,
   'name' : () => Promise<[] | [string]>,
-  'operatorOf' : (arg_0: string) => Promise<Result_2>,
+  'operatorOf' : (arg_0: bigint) => Promise<Result_2>,
   'operatorTokenIds' : (arg_0: Principal) => Promise<Result_3>,
   'operatorTokenMetadata' : (arg_0: Principal) => Promise<Result_4>,
-  'ownerOf' : (arg_0: string) => Promise<Result_5>,
+  'ownerOf' : (arg_0: bigint) => Promise<Result_5>,
   'ownerTokenIds' : (arg_0: Principal) => Promise<Result_3>,
   'ownerTokenMetadata' : (arg_0: Principal) => Promise<Result_4>,
   'owners' : () => Promise<Array<Principal>>,
@@ -99,14 +99,14 @@ export interface _SERVICE {
   'setSymbol' : (arg_0: string) => Promise<undefined>,
   'supportedInterfaces' : () => Promise<Array<SupportedInterface>>,
   'symbol' : () => Promise<[] | [string]>,
-  'tokenMetadata' : (arg_0: string) => Promise<Result_6>,
+  'tokenMetadata' : (arg_0: bigint) => Promise<Result_6>,
   'totalSupply' : () => Promise<bigint>,
   'totalTransactions' : () => Promise<bigint>,
   'transaction' : (arg_0: bigint) => Promise<Result_7>,
-  'transfer' : (arg_0: Principal, arg_1: string) => Promise<Result>,
+  'transfer' : (arg_0: Principal, arg_1: bigint) => Promise<Result>,
   'transferFrom' : (
       arg_0: Principal,
       arg_1: Principal,
-      arg_2: string,
+      arg_2: bigint,
     ) => Promise<Result>,
 }

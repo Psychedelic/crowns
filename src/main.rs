@@ -25,7 +25,7 @@ struct Metadata {
     upgraded_at: u64,
 }
 
-type TokenIdentifier = String;
+type TokenIdentifier = Nat;
 
 #[derive(CandidType, Deserialize, Clone)]
 enum GenericValue {
@@ -464,7 +464,7 @@ fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat
                 ("operator".into(), GenericValue::Principal(operator)),
                 (
                     "token_identifier".into(),
-                    GenericValue::TextContent(token_identifier),
+                    GenericValue::NatContent(token_identifier),
                 ),
             ],
         ))
@@ -536,7 +536,7 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
                 ("to".into(), GenericValue::Principal(to)),
                 (
                     "token_identifier".into(),
-                    GenericValue::TextContent(token_identifier),
+                    GenericValue::NatContent(token_identifier),
                 ),
             ],
         ))
@@ -617,7 +617,7 @@ fn transfer_from(
                 ("to".into(), GenericValue::Principal(to)),
                 (
                     "token_identifier".into(),
-                    GenericValue::TextContent(token_identifier),
+                    GenericValue::NatContent(token_identifier),
                 ),
             ],
         ))
@@ -667,7 +667,7 @@ fn mint(
                 ("to".into(), GenericValue::Principal(to)),
                 (
                     "token_identifier".into(),
-                    GenericValue::TextContent(token_identifier),
+                    GenericValue::NatContent(token_identifier),
                 ),
             ],
         ))
@@ -743,7 +743,3 @@ fn main() {
     ic_cdk::export::candid::export_service!();
     std::print!("{}", __export_service());
 }
-
-// TODO:
-// - notification
-// - consider support: multiple operators per owner
