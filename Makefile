@@ -1,7 +1,7 @@
 .PHONY: init candid build local test format lint clean
 
-LOCAL_OWNER_CANISTER_PRINCIPAL=$(shell dfx identity get-principal)
-TEST_OWNER_CANISTER_PRINCIPAL=$(shell cat test/canister-owner-test-principal)
+LOCAL_CUSTODIAN_PRINCIPAL=$(shell dfx identity get-principal)
+TEST_CUSTODIAN_PRINCIPAL=$(shell cat test/custodian-test-principal)
 
 init:
 	npm --prefix test i
@@ -9,9 +9,9 @@ init:
 
 candid:
 	cargo run > crowns.did
-	didc bind -t ts crowns.did  > test/factory/idl.d.ts
+	didc bind -t ts crowns.did > test/factory/idl.d.ts
 	echo "// @ts-nocheck" > test/factory/idl.ts
-	didc bind -t js crowns.did  >> test/factory/idl.ts
+	didc bind -t js crowns.did >> test/factory/idl.ts
 
 build: candid
 	dfx ping local || dfx start --clean --background
@@ -19,13 +19,13 @@ build: candid
 	dfx build crowns
 
 local: build
-	dfx deploy crowns  --argument '(opt record{owners=opt vec{principal"$(LOCAL_OWNER_CANISTER_PRINCIPAL)"}})'
+	dfx deploy crowns --argument '(opt record{custodians=opt vec{principal"$(LOCAL_CUSTODIAN_PRINCIPAL)"}})'
 
 stop-replica:
 	dfx stop
 
 test: stop-replica build
-	dfx canister install crowns  --argument '(opt record{owners=opt vec{principal"$(TEST_OWNER_CANISTER_PRINCIPAL)"}})'
+	dfx canister install crowns --argument '(opt record{custodians=opt vec{principal"$(TEST_CUSTODIAN_PRINCIPAL)"}})'
 	npm --prefix test t
 	dfx stop
 
