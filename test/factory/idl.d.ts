@@ -11,25 +11,27 @@ export type GenericValue = { 'Nat64Content' : bigint } |
   { 'Int8Content' : number } |
   { 'Int16Content' : number } |
   { 'BlobContent' : Array<number> } |
+  { 'NestedContent' : Vec } |
   { 'Principal' : Principal } |
   { 'TextContent' : string };
 export interface InitArgs {
-  'owners' : [] | [Array<Principal>],
   'logo' : [] | [string],
   'name' : [] | [string],
+  'custodians' : [] | [Array<Principal>],
   'symbol' : [] | [string],
 }
 export interface Metadata {
-  'owners' : Array<Principal>,
   'logo' : [] | [string],
   'name' : [] | [string],
   'created_at' : bigint,
   'upgraded_at' : bigint,
+  'custodians' : Array<Principal>,
   'symbol' : [] | [string],
 }
 export type NftError = { 'SelfTransfer' : null } |
   { 'TokenNotFound' : null } |
   { 'TxNotFound' : null } |
+  { 'BurnedNFT' : null } |
   { 'SelfApprove' : null } |
   { 'OperatorNotFound' : null } |
   { 'Unauthorized' : null } |
@@ -58,10 +60,13 @@ export type SupportedInterface = { 'Mint' : null } |
 export interface TokenMetadata {
   'transferred_at' : [] | [bigint],
   'transferred_by' : [] | [Principal],
-  'owner' : Principal,
+  'owner' : [] | [Principal],
   'operator' : [] | [Principal],
   'properties' : Array<[string, GenericValue]>,
+  'is_burned' : boolean,
   'token_identifier' : bigint,
+  'burned_at' : [] | [bigint],
+  'burned_by' : [] | [Principal],
   'minted_at' : bigint,
   'minted_by' : Principal,
 }
@@ -71,9 +76,31 @@ export interface TxEvent {
   'details' : Array<[string, GenericValue]>,
   'caller' : Principal,
 }
+export type Vec = Array<
+  [
+    string,
+    { 'Nat64Content' : bigint } |
+      { 'Nat32Content' : number } |
+      { 'BoolContent' : boolean } |
+      { 'Nat8Content' : number } |
+      { 'Int64Content' : bigint } |
+      { 'IntContent' : bigint } |
+      { 'NatContent' : bigint } |
+      { 'Nat16Content' : number } |
+      { 'Int32Content' : number } |
+      { 'Int8Content' : number } |
+      { 'Int16Content' : number } |
+      { 'BlobContent' : Array<number> } |
+      { 'NestedContent' : Vec } |
+      { 'Principal' : Principal } |
+      { 'TextContent' : string },
+  ]
+>;
 export interface _SERVICE {
   'approve' : (arg_0: Principal, arg_1: bigint) => Promise<Result>,
   'balanceOf' : (arg_0: Principal) => Promise<Result>,
+  'burn' : (arg_0: bigint) => Promise<Result>,
+  'custodians' : () => Promise<Array<Principal>>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<
       Result_1
     >,
@@ -91,11 +118,10 @@ export interface _SERVICE {
   'ownerOf' : (arg_0: bigint) => Promise<Result_5>,
   'ownerTokenIds' : (arg_0: Principal) => Promise<Result_3>,
   'ownerTokenMetadata' : (arg_0: Principal) => Promise<Result_4>,
-  'owners' : () => Promise<Array<Principal>>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<Result>,
+  'setCustodians' : (arg_0: Array<Principal>) => Promise<undefined>,
   'setLogo' : (arg_0: string) => Promise<undefined>,
   'setName' : (arg_0: string) => Promise<undefined>,
-  'setOwners' : (arg_0: Array<Principal>) => Promise<undefined>,
   'setSymbol' : (arg_0: string) => Promise<undefined>,
   'supportedInterfaces' : () => Promise<Array<SupportedInterface>>,
   'symbol' : () => Promise<[] | [string]>,
