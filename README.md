@@ -1,6 +1,6 @@
 # 👑 Crowns
 
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org) [![Integration tests](https://github.com/Psychedelic/crowns/actions/workflows/pr-integration-test-runner.yml/badge.svg)](https://github.com/Psychedelic/crowns/actions/workflows/pr-integration-test-runner.yml)
 
 Crowns ([DIP-721](https://github.com/Psychedelic/DIP721)) are a collection of 10,000 uniquely generated NFTs on the Internet Computer. With a mix of traditional and psychedelic materials, and a CAP-powered transaction history for full provenance.
 
