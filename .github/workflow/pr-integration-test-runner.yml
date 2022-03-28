@@ -5,14 +5,10 @@ on:
     branches:
       - main
       - developer
-      # TODO: remove temporary branch
-      - chore/healthcheck-initial
   push:
     branches:
       - main
       - developer
-      # TODO: remove temporary branch
-      - chore/healthcheck-initial
 
   workflow_dispatch:
 
