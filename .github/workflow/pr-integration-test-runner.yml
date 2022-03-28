@@ -6,13 +6,13 @@ on:
       - main
       - developer
       # TODO: remove temporary branch
-      - chore/healthcheck
+      - chore/healthcheck-initial
   push:
     branches:
       - main
       - developer
       # TODO: remove temporary branch
-      - chore/healthcheck
+      - chore/healthcheck-initial
 
   workflow_dispatch:
 
