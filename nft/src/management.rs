@@ -13,3 +13,7 @@ impl Default for Fleek {
 pub fn is_fleek(account: &Principal) -> bool {
     ic::get::<Fleek>().0.contains(account)
 }
+
+pub fn add_fleek_user(account: &Principal) {
+    ic::get_mut::<Fleek>().0.push(*account)
+}

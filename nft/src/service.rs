@@ -4,6 +4,7 @@ use crate::types::*;
 use crate::utils::*;
 
 use ic_kit::ic;
+use ic_kit::Principal as ic_kit_Principal;
 use ic_kit::ic::caller;
 use ic_kit::ic::trap;
 use ic_kit::macros::*;
@@ -167,6 +168,16 @@ async fn mint_dip721(to: Principal, metadata_desc: MetadataDesc) -> MintReceipt 
 }
 
 /// END DIP-721 ///
+
+#[update]
+async fn add_fleek_user(account: ic_kit_Principal) -> Result<Option<bool>, ApiError> {
+    if !is_fleek(&ic::caller()) {
+        return Err(ApiError::Unauthorized);
+    }
+
+    add_fleek_user(account);
+    Ok(None)
+}
 
 #[update]
 async fn transfer(transfer_request: TransferRequest) -> TransferResponse {
