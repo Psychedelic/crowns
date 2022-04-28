@@ -17,7 +17,7 @@
  type AddFleekUserResult =
  variant {
    Err: ApiError;
-   Ok: None;
+   Ok: opt bool;
  };
 
  type TxReceipt =
