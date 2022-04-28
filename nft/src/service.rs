@@ -4,10 +4,10 @@ use crate::types::*;
 use crate::utils::*;
 
 use ic_kit::ic;
-use ic_kit::Principal as ic_kit_Principal;
 use ic_kit::ic::caller;
 use ic_kit::ic::trap;
 use ic_kit::macros::*;
+use ic_kit::Principal as ic_kit_Principal;
 
 use cap_sdk::handshake;
 use cap_sdk::DetailValue;
