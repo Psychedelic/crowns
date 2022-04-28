@@ -14,6 +14,12 @@
    Ok: principal;
  };
 
+ type AddFleekUserResult =
+ variant {
+   Err: ApiError;
+   Ok: opt bool;
+ };
+
  type TxReceipt =
  variant {
    Err: ApiError;
@@ -299,6 +305,9 @@ type AccountIdentifier = text;
    supply: (TokenIdentifier) -> (BalanceReturn) query;
    metadata: (TokenIdentifier) -> (MetadataReturn)  query;
    add: (TransferRequest) -> (TransactionId);
+
+   // Management //
+   add_fleek_user: (account: Principal) -> (AddFleekUserResult);
  };
 
 service : (principal, text, text, principal) -> erc721_token
