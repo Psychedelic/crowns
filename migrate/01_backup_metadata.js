@@ -1,14 +1,14 @@
 import fetch from "isomorphic-fetch";
-import {Actor, HttpAgent} from "@dfinity/agent";
-import {idlFactory} from "./factory/idl_legacy.js";
-import {writeFileSync} from "fs";
-import {Ed25519KeyIdentity} from "@dfinity/identity";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import { idlFactory } from "./factory/idl_legacy.js";
+import { writeFileSync } from "fs";
+import { Ed25519KeyIdentity } from "@dfinity/identity";
 
 const identity = Ed25519KeyIdentity.generate();
 
 const actor = Actor.createActor(idlFactory, {
   canisterId: "vlhm2-4iaaa-aaaam-qaatq-cai",
-  agent: new HttpAgent({host: "https://ic0.app", fetch, identity})
+  agent: new HttpAgent({ host: "https://ic0.app", fetch, identity }),
 });
 
 const totalItems = 10_000;
@@ -30,11 +30,12 @@ for (let i = 0; i < chunks.length; i++) {
   for (let j = 0; j < chunks[i].length; j++) {
     const tokenId = i * chunks[i].length + j;
 
-    promises[j] = actor.getMetadataDip721(BigInt(tokenId))
-      .then(result => result.Ok[0].key_val_data)
-      .then(properties => ({
+    promises[j] = actor
+      .getMetadataDip721(BigInt(tokenId))
+      .then((result) => result.Ok[0].key_val_data)
+      .then((properties) => ({
         tokenId,
-        properties
+        properties,
       }));
   }
 
@@ -47,4 +48,4 @@ for (let i = 0; i < chunks.length; i++) {
 
 const flatten = chunks.reduce((acc, c) => acc.concat(c), []);
 
-writeFileSync('01_backup_metadata.json', JSON.stringify(flatten, null, 2));
+writeFileSync("01_backup_metadata.json", JSON.stringify(flatten, null, 2));
