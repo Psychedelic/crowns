@@ -109,6 +109,8 @@ export interface _SERVICE {
   'balanceOf' : (arg_0: Principal) => Promise<Result>,
   'custodians' : () => Promise<Array<Principal>>,
   'cycles' : () => Promise<bigint>,
+  'dfxInfo' : () => Promise<string>,
+  'gitCommitHash' : () => Promise<string>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<
       Result_1
     >,
@@ -126,6 +128,7 @@ export interface _SERVICE {
   'ownerOf' : (arg_0: bigint) => Promise<Result_2>,
   'ownerTokenIdentifiers' : (arg_0: Principal) => Promise<ManualReply_1>,
   'ownerTokenMetadata' : (arg_0: Principal) => Promise<ManualReply_2>,
+  'rustToolchainInfo' : () => Promise<string>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<Result>,
   'setCustodians' : (arg_0: Array<Principal>) => Promise<undefined>,
   'setLogo' : (arg_0: string) => Promise<undefined>,
