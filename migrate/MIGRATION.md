@@ -1,3 +1,12 @@
+### 0. Prepare Tools
+
+Install dependencies
+
+```bash
+$ cd migrate
+$ npm i
+```
+
 ### 1. Backup Metadata
 
 Result output as `01_backup_metadata.json` file
