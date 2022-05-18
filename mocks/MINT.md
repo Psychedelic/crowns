@@ -27,3 +27,7 @@ MAX_CHUNKS=1 node mint-crowns.js
 ## Failed to mint?
 
 Make sure that the local replica is running, or if you have changed the host, and verify the Crowns canister id is correct by tweaking the settings file.
+
+## Server returns "Too Many Requests" error?
+
+The local replica can get overloaded, to prevent that from occurring you can tweak and increase the value of `chunkPromiseDelayMs` setting. By providing a longer delay between batch calls, will lessen the chances of getting the error.

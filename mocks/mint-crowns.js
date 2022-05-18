@@ -6,6 +6,7 @@ import { readFileSync } from "fs";
 import { Principal } from "@dfinity/principal";
 import { fleekPrincipals, systemPrincipal } from './principals.js';
 import settings from './settings.js';
+import { delay } from './utils.js';
 
 (async () => {
   const {
@@ -13,6 +14,7 @@ import settings from './settings.js';
     host,
     aggrCrownsJsonPath,
     chunkSize,
+    chunkPromiseDelayMs,
   } = settings;
 
   const { identity } = systemPrincipal;
@@ -51,6 +53,7 @@ import settings from './settings.js';
     console.log("processing chunk:", i);
   
     try {
+      await delay(chunkPromiseDelayMs);
       await Promise.all(
         chunks[i].map((c, idx) => {
           const principal = hasFleekPrincipalAtIndex(i, idx, c.to);
