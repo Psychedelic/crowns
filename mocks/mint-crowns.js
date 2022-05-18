@@ -42,8 +42,10 @@ import { fleekPrincipals, systemPrincipal } from './principals.js';
   
     return fleekPrincipals[idx] || defaultPrincipal;
   };
+
+  const maxChunks = process.env.MAX_CHUNKS || chunks.length;
   
-  for (let i = 0; i < chunks.length; i++) {
+  for (let i = 0; i < maxChunks; i++) {
     console.log("processing chunk:", i);
   
     try {
