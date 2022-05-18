@@ -51,7 +51,7 @@ import 'dotenv/config';
   const maxChunks = process.env.MAX_CHUNKS || chunks.length;
   
   for (let i = 0; i < maxChunks; i++) {
-    console.log("processing chunk:", i);
+    console.log("Currently processing chunk nr ", i);
   
     try {
       await delay(chunkPromiseDelayMs);
