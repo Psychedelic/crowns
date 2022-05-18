@@ -5,11 +5,15 @@ import fetch from "isomorphic-fetch";
 import { readFileSync } from "fs";
 import { Principal } from "@dfinity/principal";
 import { fleekPrincipals, systemPrincipal } from './principals.js';
+import settings from './settings.js';
 
 (async () => {
-  const localCrownsCanisterId = 'rkp4c-7iaaa-aaaaa-aaaca-cai';
-  const host = 'http://127.0.0.1:8000';
-  const aggrCrownsJsonPath = '../migrate/03_aggregate.json';
+  const {
+    localCrownsCanisterId,
+    host,
+    aggrCrownsJsonPath,
+    chunkSize,
+  } = settings;
 
   const { identity } = systemPrincipal;
 
@@ -29,10 +33,8 @@ import { fleekPrincipals, systemPrincipal } from './principals.js';
   
   const data = JSON.parse(readFileSync(aggrCrownsJsonPath, "utf-8"));
   
-  const batchSize = 100;
-  
   const chunks = data.reduce((all, one, i) => {
-    const chIdx = Math.floor(i / batchSize);
+    const chIdx = Math.floor(i / chunkSize);
     all[chIdx] = (all[chIdx] || []).concat(one);
     return all;
   }, []);
