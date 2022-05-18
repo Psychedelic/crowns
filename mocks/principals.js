@@ -1,6 +1,6 @@
 import { Secp256k1KeyIdentity } from "@dfinity/identity";
 
-export const userPrincipals = process.env.USER_PRINCIPALS || [];
+export const userPrincipals = JSON.parse(process.env.USER_PRINCIPALS) || [];
 
 // Static principal for system use
 // this is a randomly generated principal for reusability or testing only

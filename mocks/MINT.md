@@ -37,7 +37,7 @@ touch .env
 The .env file content:
 
 ```sh
-USER_PRINCIPALS=["abcde-b64dz-nh6nr-7iqjo-z54h3-teeb3-7gzbn-6g6le-jmbok-a7b2f-lit", "zycz-iacec-blwhn-qymcu-i6zmt-c3ds5-hwqqs-g2j5u-ekp5m-3m26i-dif"]
+USER_PRINCIPALS='["abcde-b64dz-nh6nr-7iqjo-z54h3-teeb3-7gzbn-6g6le-jmbok-a7b2f-lit", "zycz-iacec-blwhn-qymcu-i6zmt-c3ds5-hwqqs-g2j5u-ekp5m-3m26i-dif"]'
 ```
 
 # Troublehooting
@@ -52,4 +52,4 @@ The local replica can get overloaded, to prevent that from occurring you can twe
 
 ## Failure when I provide the user principal list?
 
-Make sure that the user principals are provided in a single line, so no line breaks.
+Make sure that the user principals are provided in a single line, so no line breaks and use a single quote to wrap it, e.g. '["aaaa-zzzz", "bbbb-cae", "fsdfsd-dssdds-cae"]'.
