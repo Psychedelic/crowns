@@ -4,9 +4,10 @@ import { idlFactory } from "../migrate/factory/idl.js";
 import fetch from "isomorphic-fetch";
 import { readFileSync } from "fs";
 import { Principal } from "@dfinity/principal";
-import { fleekPrincipals, systemPrincipal } from './principals.js';
+import { userPrincipals, systemPrincipal } from './principals.js';
 import settings from './settings.js';
 import { delay } from './utils.js';
+import 'dotenv/config';
 
 (async () => {
   const {
@@ -41,10 +42,10 @@ import { delay } from './utils.js';
     return all;
   }, []);
   
-  const hasFleekPrincipalAtIndex = (parentId, idx, defaultPrincipal) => {
+  const hasUserPrincipalAtIndex = (parentId, idx, defaultPrincipal) => {
     if (parentId > 1) return defaultPrincipal;
   
-    return fleekPrincipals[idx] || defaultPrincipal;
+    return userPrincipals[idx] || defaultPrincipal;
   };
 
   const maxChunks = process.env.MAX_CHUNKS || chunks.length;
@@ -56,7 +57,7 @@ import { delay } from './utils.js';
       await delay(chunkPromiseDelayMs);
       await Promise.all(
         chunks[i].map((c, idx) => {
-          const principal = hasFleekPrincipalAtIndex(i, idx, c.to);
+          const principal = hasUserPrincipalAtIndex(i, idx, c.to);
           actor.mint(Principal.fromText(principal), BigInt(c.id), c.properties);
         })
       );
