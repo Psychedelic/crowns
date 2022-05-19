@@ -1,4 +1,5 @@
 import { Secp256k1KeyIdentity } from "@dfinity/identity";
+import 'dotenv/config';
 
 export const userPrincipals = JSON.parse(process.env.USER_PRINCIPALS) || [];
 
