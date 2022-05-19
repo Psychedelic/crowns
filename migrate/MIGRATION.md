@@ -61,3 +61,21 @@ Pushing data to the canister
 $ cd migrate
 $ SECRET=<CONTROLLER_PRIVATE_KEY> node 04_migrate.js
 ```
+
+### 6. Verify metadata migration (Optional for testing)
+
+Compare metadata between legacy canister with crown test canister
+
+```bash
+$ cd migrate
+$ node 05_verify_metadata.js
+```
+
+### 7. Verify owner migration (Optional for testing)
+
+Compare owner between legacy canister with crown test canister
+
+```bash
+$ cd migrate
+$ node 06_verify_owner.js
+```
