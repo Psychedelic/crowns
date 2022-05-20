@@ -1,6 +1,7 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Secp256k1KeyIdentity } from "@dfinity/identity";
-import { idlFactory } from "../migrate/factory/idl.js";
+import { idlFactory as mkpIdlFactory } from "../migrate/factory/idl.js";
+import wicpIdlFactory from './factory/wicp.js';
 import fetch from "isomorphic-fetch";
 import { readFileSync } from "fs";
 import { Principal } from "@dfinity/principal";
@@ -9,9 +10,13 @@ import settings from './settings.js';
 import { delay } from './utils.js';
 import 'dotenv/config';
 
+// 100 WICP (10_000_000_000 / 10^8 )
+const amountE8sPerUser = 10_000_000_000;
+
 (async () => {
   const {
     localCrownsCanisterId,
+    localWicpCanisterId,
     host,
     aggrCrownsJsonPath,
     chunkSize,
@@ -29,8 +34,13 @@ import 'dotenv/config';
     console.error(err);
   }
 
-  const actor = Actor.createActor(idlFactory, {
+  const actorMkp = Actor.createActor(mkpIdlFactory, {
     canisterId: localCrownsCanisterId,
+    agent,
+  });
+
+  const actorWicp = Actor.createActor(wicpIdlFactory, {
+    canisterId: localWicpCanisterId,
     agent,
   });
   
@@ -58,11 +68,24 @@ import 'dotenv/config';
       await Promise.all(
         chunks[i].map((c, idx) => {
           const principal = hasUserPrincipalAtIndex(i, idx, c.to);
-          actor.mint(Principal.fromText(principal), BigInt(c.id), c.properties);
+          actorMkp.mint(Principal.fromText(principal), BigInt(c.id), c.properties);
         })
       );
     } catch (e) {
       throw e;
     }
   }
+
+  let promisesForWicpTopup = [];
+
+  for (let i = 0; i < userPrincipals.length; i++) {
+    promisesForWicpTopup.push(
+      actorWicp.transfer(
+        Principal.fromText(userPrincipals[i]),
+        BigInt(amountE8sPerUser),
+      ),
+    );
+  }
+
+  await Promise.all(promisesForWicpTopup);
 })();
