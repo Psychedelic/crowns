@@ -10,6 +10,9 @@ import settings from './settings.js';
 import { delay } from './utils.js';
 import 'dotenv/config';
 
+// 100 WICP (10_000_000_000 / 10^8 )
+const amountE8sPerUser = 10_000_000_000;
+
 (async () => {
   const {
     localCrownsCanisterId,
@@ -79,7 +82,7 @@ import 'dotenv/config';
     promisesForWicpTopup.push(
       actorWicp.transfer(
         Principal.fromText(userPrincipals[i]),
-        BigInt(1_000_000_000),
+        BigInt(amountE8sPerUser),
       ),
     );
   }
