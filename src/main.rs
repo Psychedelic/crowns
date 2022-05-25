@@ -1,4 +1,4 @@
-use cap_sdk::{handshake, insert_sync, DetailValue, IndefiniteEvent};
+use cap_sdk::{handshake, insert_sync, CapEnv, DetailValue, IndefiniteEvent};
 use compile_time_run::run_command_str;
 use ic_cdk::api::call::ManualReply;
 use ic_cdk::api::print;
@@ -810,7 +810,10 @@ fn mint(
 #[pre_upgrade]
 fn pre_upgrade() {
     ledger::with(|ledger| {
-        if let Err(err) = ic_cdk::storage::stable_save::<(&ledger::Ledger,)>((ledger,)) {
+        if let Err(err) = ic_cdk::storage::stable_save::<(&ledger::Ledger, CapEnv)>((
+            ledger,
+            CapEnv::to_archive(),
+        )) {
             trap(&format!(
                 "An error occurred when saving to stable memory (pre_upgrade): {:?}",
                 err
@@ -822,10 +825,11 @@ fn pre_upgrade() {
 #[post_upgrade]
 fn post_upgrade() {
     ledger::with_mut(
-        |ledger| match ic_cdk::storage::stable_restore::<(ledger::Ledger,)>() {
-            Ok((ledger_store,)) => {
+        |ledger| match ic_cdk::storage::stable_restore::<(ledger::Ledger, CapEnv)>() {
+            Ok((ledger_store, cap_env)) => {
                 *ledger = ledger_store;
                 ledger.metadata_mut().upgraded_at = time();
+                CapEnv::load_from_archive(cap_env);
             }
             Err(err) => {
                 trap(&format!(
