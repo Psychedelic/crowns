@@ -1,4 +1,7 @@
-use cap_sdk::{handshake, insert_sync, CapEnv, DetailValue, IndefiniteEvent};
+use cap_sdk::{
+    handshake, insert_sync, pending_transactions, restore_pending_transactions, CapEnv,
+    DetailValue, IndefiniteEvent,
+};
 use compile_time_run::run_command_str;
 use ic_cdk::api::call::ManualReply;
 use ic_cdk::api::print;
@@ -810,10 +813,12 @@ fn mint(
 #[pre_upgrade]
 fn pre_upgrade() {
     ledger::with(|ledger| {
-        if let Err(err) = ic_cdk::storage::stable_save::<(&ledger::Ledger, CapEnv)>((
-            ledger,
-            CapEnv::to_archive(),
-        )) {
+        if let Err(err) = ic_cdk::storage::stable_save::<(
+            &ledger::Ledger,
+            CapEnv,
+            Vec<IndefiniteEvent>,
+        )>((ledger, CapEnv::to_archive(), pending_transactions()))
+        {
             trap(&format!(
                 "An error occurred when saving to stable memory (pre_upgrade): {:?}",
                 err
@@ -824,12 +829,13 @@ fn pre_upgrade() {
 
 #[post_upgrade]
 fn post_upgrade() {
-    ledger::with_mut(
-        |ledger| match ic_cdk::storage::stable_restore::<(ledger::Ledger, CapEnv)>() {
-            Ok((ledger_store, cap_env)) => {
+    ledger::with_mut(|ledger| {
+        match ic_cdk::storage::stable_restore::<(ledger::Ledger, CapEnv, Vec<IndefiniteEvent>)>() {
+            Ok((ledger_store, cap_env, pending_transactions)) => {
                 *ledger = ledger_store;
                 ledger.metadata_mut().upgraded_at = time();
                 CapEnv::load_from_archive(cap_env);
+                restore_pending_transactions(pending_transactions);
             }
             Err(err) => {
                 trap(&format!(
@@ -837,8 +843,8 @@ fn post_upgrade() {
                     err
                 ));
             }
-        },
-    )
+        }
+    })
 }
 
 #[cfg(any(target_arch = "wasm32", test))]
