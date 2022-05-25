@@ -35,18 +35,14 @@ export type ManualReply_2 = { 'Ok' : Array<TokenMetadata> } |
   { 'Err' : NftError };
 export type ManualReply_3 = { 'Ok' : TokenMetadata } |
   { 'Err' : NftError };
-export type ManualReply_4 = { 'Ok' : TxEvent } |
-  { 'Err' : NftError };
 export type NftError = { 'UnauthorizedOperator' : null } |
   { 'SelfTransfer' : null } |
   { 'TokenNotFound' : null } |
   { 'UnauthorizedOwner' : null } |
-  { 'TxNotFound' : null } |
   { 'SelfApprove' : null } |
   { 'OperatorNotFound' : null } |
   { 'ExistedNFT' : null } |
-  { 'OwnerNotFound' : null } |
-  { 'Other' : string };
+  { 'OwnerNotFound' : null };
 export type Result = { 'Ok' : bigint } |
   { 'Err' : NftError };
 export type Result_1 = { 'Ok' : boolean } |
@@ -55,13 +51,11 @@ export type Result_2 = { 'Ok' : [] | [Principal] } |
   { 'Err' : NftError };
 export interface Stats {
   'cycles' : bigint,
-  'total_transactions' : bigint,
   'total_unique_holders' : bigint,
   'total_supply' : bigint,
 }
 export type SupportedInterface = { 'Mint' : null } |
-  { 'Approval' : null } |
-  { 'TransactionHistory' : null };
+  { 'Approval' : null };
 export interface TokenMetadata {
   'transferred_at' : [] | [bigint],
   'transferred_by' : [] | [Principal],
@@ -76,12 +70,6 @@ export interface TokenMetadata {
   'burned_by' : [] | [Principal],
   'minted_at' : bigint,
   'minted_by' : Principal,
-}
-export interface TxEvent {
-  'time' : bigint,
-  'operation' : string,
-  'details' : Array<[string, GenericValue]>,
-  'caller' : Principal,
 }
 export type Vec = Array<
   [
@@ -139,9 +127,7 @@ export interface _SERVICE {
   'symbol' : () => Promise<[] | [string]>,
   'tokenMetadata' : (arg_0: bigint) => Promise<ManualReply_3>,
   'totalSupply' : () => Promise<bigint>,
-  'totalTransactions' : () => Promise<bigint>,
   'totalUniqueHolders' : () => Promise<bigint>,
-  'transaction' : (arg_0: bigint) => Promise<ManualReply_4>,
   'transfer' : (arg_0: Principal, arg_1: bigint) => Promise<Result>,
   'transferFrom' : (
       arg_0: Principal,
