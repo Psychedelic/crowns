@@ -23,6 +23,7 @@ jobs:
       DFX_WARNING: -version_check
       NODE_ENV: ci
       DFX_CANDID_RELEASE: 2022-01-06
+      CARGO_GIT_FETCH_WITH_CLI: true
 
     steps:
       - uses: actions/checkout@v2
