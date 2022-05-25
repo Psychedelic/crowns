@@ -17,6 +17,7 @@ type GenericValue = variant {
   TextContent : text;
 };
 type InitArgs = record {
+  cap : opt principal;
   logo : opt text;
   name : opt text;
   custodians : opt vec principal;

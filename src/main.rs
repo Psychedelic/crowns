@@ -1,5 +1,7 @@
+use cap_sdk::{handshake, insert_sync, DetailValue, IndefiniteEvent};
 use compile_time_run::run_command_str;
 use ic_cdk::api::call::ManualReply;
+use ic_cdk::api::print;
 use ic_cdk::api::{caller, canister_balance128, time, trap};
 use ic_cdk::export::candid::{candid_method, CandidType, Deserialize, Int, Nat};
 use ic_cdk::export::Principal;
@@ -17,6 +19,7 @@ mod types {
         pub logo: Option<String>,
         pub symbol: Option<String>,
         pub custodians: Option<HashSet<Principal>>,
+        pub cap: Option<Principal>,
     }
     #[derive(CandidType, Default, Deserialize)]
     pub struct Metadata {
@@ -35,7 +38,7 @@ mod types {
         pub total_unique_holders: Nat,
     }
     pub type TokenIdentifier = Nat;
-    #[derive(CandidType, Deserialize)]
+    #[derive(CandidType, Deserialize, Clone)]
     pub enum GenericValue {
         BoolContent(bool),
         TextContent(String),
@@ -127,6 +130,8 @@ mod ledger {
     impl Ledger {
         pub fn init_metadata(&mut self, default_custodian: Principal, args: Option<InitArgs>) {
             let metadata = self.metadata_mut();
+            let now = time();
+
             metadata.custodians.insert(default_custodian);
             if let Some(args) = args {
                 metadata.name = args.name;
@@ -137,9 +142,12 @@ mod ledger {
                         metadata.custodians.insert(custodians);
                     }
                 }
+
+                // handshake with cap
+                handshake(1_000_000_000_000, args.cap);
             }
-            metadata.created_at = time();
-            metadata.upgraded_at = time();
+            metadata.created_at = now;
+            metadata.upgraded_at = now;
         }
 
         pub fn metadata(&self) -> &Metadata {
@@ -320,6 +328,31 @@ mod ledger {
             operation: String,
             details: Vec<(String, GenericValue)>,
         ) -> usize {
+            insert_sync(IndefiniteEvent {
+                caller: caller.clone(),
+                operation: operation.clone(),
+                details: details
+                    .clone()
+                    .into_iter()
+                    .filter_map(|(key, value)| match value {
+                        GenericValue::NatContent(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::Nat64Content(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::Int64Content(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::FloatContent(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::Principal(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::TextContent(v) => Some((key, DetailValue::from(v.clone()))),
+                        GenericValue::BoolContent(v) => {
+                            if v.clone() {
+                                Some((key, DetailValue::True))
+                            } else {
+                                Some((key, DetailValue::False))
+                            }
+                        }
+                        _ => Some((key, DetailValue::Text("unsupported datatype".to_string()))),
+                    })
+                    .collect(),
+            });
+
             self.tx_records.push(TxEvent {
                 time: time(),
                 operation,

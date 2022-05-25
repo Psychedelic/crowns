@@ -25,7 +25,7 @@ stop-replica:
 	dfx stop
 
 test: stop-replica build
-	dfx canister install crowns --argument '(opt record{custodians=opt vec{principal"$(TEST_CUSTODIAN_PRINCIPAL)"}})'
+	dfx canister install crowns --argument '(opt record{custodians=opt vec{principal"$(TEST_CUSTODIAN_PRINCIPAL)"; principal"$(LOCAL_CUSTODIAN_PRINCIPAL)"}; cap=opt principal"rrkah-fqaaa-aaaaa-aaaaq-cai"})'
 	npm --prefix test t
 	dfx stop
 

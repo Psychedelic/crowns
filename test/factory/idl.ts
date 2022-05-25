@@ -2,6 +2,7 @@
 export const idlFactory = ({ IDL }) => {
   const Vec = IDL.Rec();
   const InitArgs = IDL.Record({
+    'cap' : IDL.Opt(IDL.Principal),
     'logo' : IDL.Opt(IDL.Text),
     'name' : IDL.Opt(IDL.Text),
     'custodians' : IDL.Opt(IDL.Vec(IDL.Principal)),
@@ -188,6 +189,7 @@ export const idlFactory = ({ IDL }) => {
 };
 export const init = ({ IDL }) => {
   const InitArgs = IDL.Record({
+    'cap' : IDL.Opt(IDL.Principal),
     'logo' : IDL.Opt(IDL.Text),
     'name' : IDL.Opt(IDL.Text),
     'custodians' : IDL.Opt(IDL.Vec(IDL.Principal)),
