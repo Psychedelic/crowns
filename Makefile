@@ -2,6 +2,7 @@
 
 LOCAL_CUSTODIAN_PRINCIPAL=$(shell dfx identity get-principal)
 TEST_CUSTODIAN_PRINCIPAL=$(shell cat test/custodian-test-principal)
+CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 init:
 	npm --prefix test i
