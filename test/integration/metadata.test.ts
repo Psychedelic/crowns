@@ -44,7 +44,7 @@ test("simple CRUD metadata.", async t => {
     t.deepEqual(result.custodians, [custodianIdentity.getPrincipal()]);
   });
   (await Promise.all(allActors.map(actor => actor.supportedInterfaces()))).forEach(result => {
-    t.deepEqual(result, [{Approval: null}, {Mint: null}, {TransactionHistory: null}]);
+    t.deepEqual(result, [{Approval: null}, {Mint: null}]);
   });
 });
 

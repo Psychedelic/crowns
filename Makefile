@@ -2,6 +2,8 @@
 
 LOCAL_CUSTODIAN_PRINCIPAL=$(shell dfx identity get-principal)
 TEST_CUSTODIAN_PRINCIPAL=$(shell cat test/custodian-test-principal)
+CAP_CANISTER_ID=rrkah-fqaaa-aaaaa-aaaaq-cai
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 init:
 	npm --prefix test i
@@ -19,13 +21,13 @@ build: candid
 	dfx build crowns
 
 local: build
-	dfx deploy crowns --argument '(opt record{custodians=opt vec{principal"$(LOCAL_CUSTODIAN_PRINCIPAL)"}})'
+	dfx deploy crowns --argument '(opt record{custodians=opt vec{principal"$(LOCAL_CUSTODIAN_PRINCIPAL)"; cap=opt principal"$(CAP_CANISTER_ID)"}})'
 
 stop-replica:
 	dfx stop
 
 test: stop-replica build
-	dfx canister install crowns --argument '(opt record{custodians=opt vec{principal"$(TEST_CUSTODIAN_PRINCIPAL)"}})'
+	dfx canister install crowns --argument '(opt record{custodians=opt vec{principal"$(TEST_CUSTODIAN_PRINCIPAL)"; principal"$(LOCAL_CUSTODIAN_PRINCIPAL)"}; cap=opt principal"$(CAP_CANISTER_ID)"})'
 	npm --prefix test t
 	dfx stop
 

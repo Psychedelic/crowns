@@ -2,6 +2,7 @@
 export const idlFactory = ({ IDL }) => {
   const Vec = IDL.Rec();
   const InitArgs = IDL.Record({
+    'cap' : IDL.Opt(IDL.Principal),
     'logo' : IDL.Opt(IDL.Text),
     'name' : IDL.Opt(IDL.Text),
     'custodians' : IDL.Opt(IDL.Vec(IDL.Principal)),
@@ -99,6 +100,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Stats = IDL.Record({
     'cycles' : IDL.Nat,
+    'total_transactions' : IDL.Nat,
     'total_unique_holders' : IDL.Nat,
     'total_supply' : IDL.Nat,
   });
@@ -164,6 +166,7 @@ export const idlFactory = ({ IDL }) => {
     'symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'tokenMetadata' : IDL.Func([IDL.Nat], [ManualReply_3], ['query']),
     'totalSupply' : IDL.Func([], [IDL.Nat], ['query']),
+    'totalTransactions' : IDL.Func([], [IDL.Nat], ['query']),
     'totalUniqueHolders' : IDL.Func([], [IDL.Nat], ['query']),
     'transfer' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'transferFrom' : IDL.Func(
@@ -175,6 +178,7 @@ export const idlFactory = ({ IDL }) => {
 };
 export const init = ({ IDL }) => {
   const InitArgs = IDL.Record({
+    'cap' : IDL.Opt(IDL.Principal),
     'logo' : IDL.Opt(IDL.Text),
     'name' : IDL.Opt(IDL.Text),
     'custodians' : IDL.Opt(IDL.Vec(IDL.Principal)),
