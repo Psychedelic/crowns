@@ -12,12 +12,10 @@ export const idlFactory = ({ IDL }) => {
     'SelfTransfer' : IDL.Null,
     'TokenNotFound' : IDL.Null,
     'UnauthorizedOwner' : IDL.Null,
-    'TxNotFound' : IDL.Null,
     'SelfApprove' : IDL.Null,
     'OperatorNotFound' : IDL.Null,
     'ExistedNFT' : IDL.Null,
     'OwnerNotFound' : IDL.Null,
-    'Other' : IDL.Text,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : NftError });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : NftError });
@@ -101,23 +99,14 @@ export const idlFactory = ({ IDL }) => {
   });
   const Stats = IDL.Record({
     'cycles' : IDL.Nat,
-    'total_transactions' : IDL.Nat,
     'total_unique_holders' : IDL.Nat,
     'total_supply' : IDL.Nat,
   });
   const SupportedInterface = IDL.Variant({
     'Mint' : IDL.Null,
     'Approval' : IDL.Null,
-    'TransactionHistory' : IDL.Null,
   });
   const ManualReply_3 = IDL.Variant({ 'Ok' : TokenMetadata, 'Err' : NftError });
-  const TxEvent = IDL.Record({
-    'time' : IDL.Nat64,
-    'operation' : IDL.Text,
-    'details' : IDL.Vec(IDL.Tuple(IDL.Text, GenericValue)),
-    'caller' : IDL.Principal,
-  });
-  const ManualReply_4 = IDL.Variant({ 'Ok' : TxEvent, 'Err' : NftError });
   return IDL.Service({
     'approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'balanceOf' : IDL.Func([IDL.Principal], [Result], ['query']),
@@ -175,9 +164,7 @@ export const idlFactory = ({ IDL }) => {
     'symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'tokenMetadata' : IDL.Func([IDL.Nat], [ManualReply_3], ['query']),
     'totalSupply' : IDL.Func([], [IDL.Nat], ['query']),
-    'totalTransactions' : IDL.Func([], [IDL.Nat], ['query']),
     'totalUniqueHolders' : IDL.Func([], [IDL.Nat], ['query']),
-    'transaction' : IDL.Func([IDL.Nat], [ManualReply_4], ['query']),
     'transfer' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'transferFrom' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Nat],
