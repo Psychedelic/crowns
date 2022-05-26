@@ -17,10 +17,10 @@ const allActors = [...normalActors, custodianActor];
 
 test.before(async () => {
   await custodianActor.setCustodians([
-    custodianIdentity.getPrincipal(),
     aliceIdentity.getPrincipal(),
     bobIdentity.getPrincipal(),
-    johnIdentity.getPrincipal()
+    johnIdentity.getPrincipal(),
+    custodianIdentity.getPrincipal()
   ]);
 });
 
