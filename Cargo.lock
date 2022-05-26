@@ -337,7 +337,7 @@ dependencies = [
 [[package]]
 name = "cap-common"
 version = "0.2.0"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#77144ab9463fc6dab5acc0ebd099e0efeec23cf0"
+source = "git+https://github.com/Psychedelic/cap.git?rev=fcbf3e4#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
 dependencies = [
  "async-std",
  "certified-vars",
@@ -353,7 +353,7 @@ dependencies = [
 [[package]]
 name = "cap-sdk"
 version = "0.2.1"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#77144ab9463fc6dab5acc0ebd099e0efeec23cf0"
+source = "git+https://github.com/Psychedelic/cap.git?rev=fcbf3e4#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
 dependencies = [
  "async-stream",
  "cap-sdk-core",
@@ -368,7 +368,7 @@ dependencies = [
 [[package]]
 name = "cap-sdk-core"
 version = "0.2.1"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#77144ab9463fc6dab5acc0ebd099e0efeec23cf0"
+source = "git+https://github.com/Psychedelic/cap.git?rev=fcbf3e4#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
 dependencies = [
  "cap-common",
  "ic-cdk 0.3.3",
