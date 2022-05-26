@@ -85,9 +85,9 @@ dependencies = [
 
 [[package]]
 name = "async-io"
-version = "1.6.0"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a811e6a479f2439f0c04038796b5cfb3d2ad56c230e0f2d3f7b04d68cfee607b"
+checksum = "e5e18f61464ae81cde0a23e713ae8fd299580c54d697a35820cfd0625b8b0e07"
 dependencies = [
  "concurrent-queue",
  "futures-lite",
@@ -337,7 +337,7 @@ dependencies = [
 [[package]]
 name = "cap-common"
 version = "0.2.0"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
+source = "git+https://github.com/Psychedelic/cap.git?branch=main#a97dd7f5bcbf0af45d58f0a36a3ed39f4a5d7b6e"
 dependencies = [
  "async-std",
  "certified-vars",
@@ -353,8 +353,9 @@ dependencies = [
 [[package]]
 name = "cap-sdk"
 version = "0.2.1"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
+source = "git+https://github.com/Psychedelic/cap.git?branch=main#a97dd7f5bcbf0af45d58f0a36a3ed39f4a5d7b6e"
 dependencies = [
+ "async-std",
  "async-stream",
  "cap-sdk-core",
  "futures",
@@ -368,7 +369,7 @@ dependencies = [
 [[package]]
 name = "cap-sdk-core"
 version = "0.2.1"
-source = "git+https://github.com/Psychedelic/cap.git?branch=main#fcbf3e4e47236f6927511631e24eacc4a61ac59a"
+source = "git+https://github.com/Psychedelic/cap.git?branch=main#a97dd7f5bcbf0af45d58f0a36a3ed39f4a5d7b6e"
 dependencies = [
  "cap-common",
  "ic-cdk 0.3.3",
