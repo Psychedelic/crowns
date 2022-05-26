@@ -426,30 +426,6 @@ test.serial("approve NFTs.", async t => {
   ).forEach(result => t.deepEqual(result, {Ok: false}));
 });
 
-// test.serial("verify stats after approve.", async t => {
-//   // verify totalSupply
-//   (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-//     t.is(result, BigInt(4));
-//   });
-
-//   // verify cycles
-//   (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-//     t.truthy(result);
-//   });
-
-//   // verify totalUniqueHolders
-//   (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-//     t.is(result, BigInt(3));
-//   });
-
-//   // verify stats
-//   (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-//     t.truthy(result.cycles);
-//     t.is(result.total_supply, BigInt(4));
-//     t.is(result.total_unique_holders, BigInt(3));
-//   });
-// });
-
 test.serial("verify approve information.", async t => {
   // verify balanceOf
   (await Promise.all(allActors.map(actor => actor.balanceOf(aliceIdentity.getPrincipal())))).forEach(result => {
