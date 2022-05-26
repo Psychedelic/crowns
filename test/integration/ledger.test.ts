@@ -15,26 +15,23 @@ import {
 const normalActors = [aliceActor, bobActor, johnActor];
 const allActors = [...normalActors, custodianActor];
 
+// TODO: The following is temporary and should be removed post removal of is_custodian
+// see related (error on query non-existed information.), which is skipped
+test.before(async () => {
+  await custodianActor.setCustodians([
+    aliceIdentity.getPrincipal(),
+    bobIdentity.getPrincipal(),
+    johnIdentity.getPrincipal(),
+    custodianIdentity.getPrincipal()
+  ]);
+});
+
 test.serial("simple mint NFT and verify information.", async t => {
   // mint
   t.deepEqual(
     await custodianActor.mint(aliceIdentity.getPrincipal(), BigInt(1), [["A", {Nat64Content: BigInt(9999)}]]),
-    {Ok: BigInt(1)}
+    {Ok: BigInt(0)}
   );
-
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(1))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "mint",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["to", {Principal: aliceIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(1)}]
-        ]
-      }
-    });
-  });
 
   // verify token
   (await Promise.all(allActors.map(actor => actor.tokenMetadata(BigInt(1))))).forEach(result => {
@@ -102,11 +99,6 @@ test.serial("simple mint NFT and verify information.", async t => {
 });
 
 test.serial("verify stats after simple mint.", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(1));
-  });
-
   // verify totalSupply
   (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
     t.is(result, BigInt(1));
@@ -125,13 +117,12 @@ test.serial("verify stats after simple mint.", async t => {
   // verify stats
   (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
     t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(1));
     t.is(result.total_supply, BigInt(1));
     t.is(result.total_unique_holders, BigInt(1));
   });
 });
 
-test.serial("error on query non-existed information.", async t => {
+test.skip("error on query non-existed information.", async t => {
   // mint error when caller is not an owner
   (
     await Promise.allSettled(
@@ -146,15 +137,6 @@ test.serial("error on query non-existed information.", async t => {
     Err: {
       ExistedNFT: null
     }
-  });
-
-  // transaction error when non-exist tx_id
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(0))))).forEach(result => {
-    t.deepEqual(result, {
-      Err: {
-        TxNotFound: null
-      }
-    });
   });
 
   // tokenMetadata error when non-exist token
@@ -199,22 +181,17 @@ test.serial("error on query non-existed information.", async t => {
 test.serial("mint NFTs.", async t => {
   t.deepEqual(
     await custodianActor.mint(aliceIdentity.getPrincipal(), BigInt(2), [["B", {Int64Content: BigInt(1234)}]]),
-    {Ok: BigInt(2)}
+    {Ok: BigInt(0)}
   );
   t.deepEqual(await custodianActor.mint(bobIdentity.getPrincipal(), BigInt(3), [["C", {Int32Content: 5678}]]), {
-    Ok: BigInt(3)
+    Ok: BigInt(0)
   });
   t.deepEqual(await custodianActor.mint(johnIdentity.getPrincipal(), BigInt(4), [["D", {TextContent: "∆≈ç√∫"}]]), {
-    Ok: BigInt(4)
+    Ok: BigInt(0)
   });
 });
 
 test.serial("verify stats after mint.", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
-
   // verify totalSupply
   (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
     t.is(result, BigInt(4));
@@ -233,51 +210,12 @@ test.serial("verify stats after mint.", async t => {
   // verify stats
   (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
     t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(4));
     t.is(result.total_supply, BigInt(4));
     t.is(result.total_unique_holders, BigInt(3));
   });
 });
 
 test.serial("verify mint information.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(2))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "mint",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["to", {Principal: aliceIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(2)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(3))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "mint",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["to", {Principal: bobIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(3)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(4))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "mint",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["to", {Principal: johnIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(4)}]
-        ]
-      }
-    });
-  });
-
   // verify token
   (await Promise.all(allActors.map(actor => actor.tokenMetadata(BigInt(2))))).forEach(result => {
     t.like(result, {
@@ -468,10 +406,10 @@ test.serial("verify mint information.", async t => {
 });
 
 test.serial("approve NFTs.", async t => {
-  t.deepEqual(await bobActor.approve(aliceIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(5)});
-  t.deepEqual(await johnActor.approve(aliceIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(6)});
-  t.deepEqual(await aliceActor.approve(bobIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(7)});
-  t.deepEqual(await aliceActor.approve(johnIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(8)});
+  t.deepEqual(await bobActor.approve(aliceIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(0)});
+  t.deepEqual(await johnActor.approve(aliceIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(0)});
+  t.deepEqual(await aliceActor.approve(bobIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(0)});
+  t.deepEqual(await aliceActor.approve(johnIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(0)});
 
   // verify isApprovedForAll
   (
@@ -488,87 +426,29 @@ test.serial("approve NFTs.", async t => {
   ).forEach(result => t.deepEqual(result, {Ok: false}));
 });
 
-test.serial("verify stats after approve.", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(8));
-  });
+// test.serial("verify stats after approve.", async t => {
+//   // verify totalSupply
+//   (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
+//     t.is(result, BigInt(4));
+//   });
 
-  // verify totalSupply
-  (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
+//   // verify cycles
+//   (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
+//     t.truthy(result);
+//   });
 
-  // verify cycles
-  (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-    t.truthy(result);
-  });
+//   // verify totalUniqueHolders
+//   (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
+//     t.is(result, BigInt(3));
+//   });
 
-  // verify totalUniqueHolders
-  (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-    t.is(result, BigInt(3));
-  });
-
-  // verify stats
-  (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-    t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(8));
-    t.is(result.total_supply, BigInt(4));
-    t.is(result.total_unique_holders, BigInt(3));
-  });
-});
-
-test.serial("verify approve transactions.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(5))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: bobIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: aliceIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(3)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(6))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: johnIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: aliceIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(4)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(7))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: aliceIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: bobIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(1)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(8))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: aliceIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: johnIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(2)}]
-        ]
-      }
-    });
-  });
-});
+//   // verify stats
+//   (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
+//     t.truthy(result.cycles);
+//     t.is(result.total_supply, BigInt(4));
+//     t.is(result.total_unique_holders, BigInt(3));
+//   });
+// });
 
 test.serial("verify approve information.", async t => {
   // verify balanceOf
@@ -880,92 +760,10 @@ test.serial("error on unauthorize owner when approve.", async t => {
 });
 
 test.serial("approve NFTs (new operator).", async t => {
-  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(9)});
-  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(10)});
-  t.deepEqual(await bobActor.approve(custodianIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(11)});
-  t.deepEqual(await johnActor.approve(custodianIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(12)});
-});
-
-test.serial("verify stats after approve (new operator).", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(12));
-  });
-
-  // verify totalSupply
-  (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
-
-  // verify cycles
-  (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-    t.truthy(result);
-  });
-
-  // verify totalUniqueHolders
-  (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-    t.is(result, BigInt(3));
-  });
-
-  // verify stats
-  (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-    t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(12));
-    t.is(result.total_supply, BigInt(4));
-    t.is(result.total_unique_holders, BigInt(3));
-  });
-});
-
-test.serial("verify approve transactions after updated to new operator.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(9))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: aliceIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(1)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(10))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: aliceIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(2)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(11))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: bobIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(3)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(12))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "approve",
-        caller: johnIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(4)}]
-        ]
-      }
-    });
-  });
+  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(0)});
+  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(0)});
+  t.deepEqual(await bobActor.approve(custodianIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(0)});
+  t.deepEqual(await johnActor.approve(custodianIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(0)});
 });
 
 test.serial("verify approve information after updated to new operator.", async t => {
@@ -1306,32 +1104,27 @@ test.serial("transferFrom.", async t => {
   t.deepEqual(
     await custodianActor.transferFrom(aliceIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(1)),
     {
-      Ok: BigInt(13)
+      Ok: BigInt(0)
     }
   );
   t.deepEqual(
     await custodianActor.transferFrom(aliceIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(2)),
     {
-      Ok: BigInt(14)
+      Ok: BigInt(0)
     }
   );
   t.deepEqual(
     await custodianActor.transferFrom(bobIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(3)),
     {
-      Ok: BigInt(15)
+      Ok: BigInt(0)
     }
   );
   t.deepEqual(await custodianActor.transferFrom(johnIdentity.getPrincipal(), aliceIdentity.getPrincipal(), BigInt(4)), {
-    Ok: BigInt(16)
+    Ok: BigInt(0)
   });
 });
 
 test.serial("verify stats after transferFrom.", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(16));
-  });
-
   // verify totalSupply
   (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
     t.is(result, BigInt(4));
@@ -1350,65 +1143,8 @@ test.serial("verify stats after transferFrom.", async t => {
   // verify stats
   (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
     t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(16));
     t.is(result.total_supply, BigInt(4));
     t.is(result.total_unique_holders, BigInt(2));
-  });
-});
-
-test.serial("verify transferFrom transactions.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(13))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transferFrom",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: aliceIdentity.getPrincipal()}],
-          ["to", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(1)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(14))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transferFrom",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: aliceIdentity.getPrincipal()}],
-          ["to", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(2)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(15))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transferFrom",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: bobIdentity.getPrincipal()}],
-          ["to", {Principal: custodianIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(3)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(16))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transferFrom",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: johnIdentity.getPrincipal()}],
-          ["to", {Principal: aliceIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(4)}]
-        ]
-      }
-    });
   });
 });
 
@@ -1634,102 +1370,16 @@ test.serial("error on unauthorize owner when transfer.", async t => {
 
 test.serial("transfer.", async t => {
   t.deepEqual(await custodianActor.transfer(johnIdentity.getPrincipal(), BigInt(1)), {
-    Ok: BigInt(17)
+    Ok: BigInt(0)
   });
   t.deepEqual(await custodianActor.transfer(johnIdentity.getPrincipal(), BigInt(2)), {
-    Ok: BigInt(18)
+    Ok: BigInt(0)
   });
   t.deepEqual(await custodianActor.transfer(bobIdentity.getPrincipal(), BigInt(3)), {
-    Ok: BigInt(19)
+    Ok: BigInt(0)
   });
   t.deepEqual(await aliceActor.transfer(bobIdentity.getPrincipal(), BigInt(4)), {
-    Ok: BigInt(20)
-  });
-});
-
-test.serial("verify stats after transfer.", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(20));
-  });
-
-  // verify totalSupply
-  (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
-
-  // verify cycles
-  (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-    t.truthy(result);
-  });
-
-  // verify totalUniqueHolders
-  (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-    t.is(result, BigInt(2));
-  });
-
-  // verify stats
-  (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-    t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(20));
-    t.is(result.total_supply, BigInt(4));
-    t.is(result.total_unique_holders, BigInt(2));
-  });
-});
-
-test.serial("verify transfer transactions.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(17))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transfer",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: custodianIdentity.getPrincipal()}],
-          ["to", {Principal: johnIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(1)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(18))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transfer",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: custodianIdentity.getPrincipal()}],
-          ["to", {Principal: johnIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(2)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(19))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transfer",
-        caller: custodianIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: custodianIdentity.getPrincipal()}],
-          ["to", {Principal: bobIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(3)}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(20))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "transfer",
-        caller: aliceIdentity.getPrincipal(),
-        details: [
-          ["owner", {Principal: aliceIdentity.getPrincipal()}],
-          ["to", {Principal: bobIdentity.getPrincipal()}],
-          ["token_identifier", {NatContent: BigInt(4)}]
-        ]
-      }
-    });
+    Ok: BigInt(0)
   });
 });
 
@@ -1922,8 +1572,8 @@ test.serial("verify transfer information.", async t => {
 });
 
 test.serial("setApprovalForAll(true).", async t => {
-  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), true), {Ok: BigInt(21)});
-  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), true), {Ok: BigInt(22)});
+  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), true), {Ok: BigInt(0)});
+  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), true), {Ok: BigInt(0)});
 
   // verify isApprovedForAll
   (
@@ -1932,64 +1582,6 @@ test.serial("setApprovalForAll(true).", async t => {
       ...allActors.map(actor => actor.isApprovedForAll(johnIdentity.getPrincipal(), bobIdentity.getPrincipal()))
     ])
   ).forEach(result => t.deepEqual(result, {Ok: true}));
-});
-
-test.serial("verify stats after setApprovalForAll(true).", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(22));
-  });
-
-  // verify totalSupply
-  (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
-
-  // verify cycles
-  (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-    t.truthy(result);
-  });
-
-  // verify totalUniqueHolders
-  (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-    t.is(result, BigInt(2));
-  });
-
-  // verify stats
-  (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-    t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(22));
-    t.is(result.total_supply, BigInt(4));
-    t.is(result.total_unique_holders, BigInt(2));
-  });
-});
-
-test.serial("verify setApprovalForAll(true) transactions.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(21))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "setApprovalForAll",
-        caller: bobIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: johnIdentity.getPrincipal()}],
-          ["is_approved", {BoolContent: true}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(22))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "setApprovalForAll",
-        caller: johnIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: bobIdentity.getPrincipal()}],
-          ["is_approved", {BoolContent: true}]
-        ]
-      }
-    });
-  });
 });
 
 test.serial("verify setApprovalForAll(true) information.", async t => {
@@ -2276,8 +1868,8 @@ test.serial("error on self approve when setApprovalForAll.", async t => {
 });
 
 test.serial("setApprovalForAll(false).", async t => {
-  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), false), {Ok: BigInt(23)});
-  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), false), {Ok: BigInt(24)});
+  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), false), {Ok: BigInt(0)});
+  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), false), {Ok: BigInt(0)});
 
   // verify isApprovedForAll
   (
@@ -2286,64 +1878,6 @@ test.serial("setApprovalForAll(false).", async t => {
       ...allActors.map(actor => actor.isApprovedForAll(johnIdentity.getPrincipal(), bobIdentity.getPrincipal()))
     ])
   ).forEach(result => t.deepEqual(result, {Ok: false}));
-});
-
-test.serial("verify setApprovalForAll(false) transactions.", async t => {
-  // verify transaction
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(23))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "setApprovalForAll",
-        caller: bobIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: johnIdentity.getPrincipal()}],
-          ["is_approved", {BoolContent: false}]
-        ]
-      }
-    });
-  });
-  (await Promise.all(allActors.map(actor => actor.transaction(BigInt(24))))).forEach(result => {
-    t.like(result, {
-      Ok: {
-        operation: "setApprovalForAll",
-        caller: johnIdentity.getPrincipal(),
-        details: [
-          ["operator", {Principal: bobIdentity.getPrincipal()}],
-          ["is_approved", {BoolContent: false}]
-        ]
-      }
-    });
-  });
-});
-
-test.serial("verify stats after setApprovalForAll(false).", async t => {
-  // verify totalTransactions
-  (await Promise.all(allActors.map(actor => actor.totalTransactions()))).forEach(result => {
-    t.is(result, BigInt(24));
-  });
-
-  // verify totalSupply
-  (await Promise.all(allActors.map(actor => actor.totalSupply()))).forEach(result => {
-    t.is(result, BigInt(4));
-  });
-
-  // verify cycles
-  (await Promise.all(allActors.map(actor => actor.cycles()))).forEach(result => {
-    t.truthy(result);
-  });
-
-  // verify totalUniqueHolders
-  (await Promise.all(allActors.map(actor => actor.totalUniqueHolders()))).forEach(result => {
-    t.is(result, BigInt(2));
-  });
-
-  // verify stats
-  (await Promise.all(allActors.map(actor => actor.stats()))).forEach(result => {
-    t.truthy(result.cycles);
-    t.is(result.total_transactions, BigInt(24));
-    t.is(result.total_supply, BigInt(4));
-    t.is(result.total_unique_holders, BigInt(2));
-  });
 });
 
 test.serial("verify setApprovalForAll(false) information.", async t => {
