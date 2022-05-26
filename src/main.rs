@@ -545,6 +545,7 @@ fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat
             Some(operator),
         );
         ledger.approve(caller, &token_identifier, Some(operator));
+        // TODO: FIXME: real event
         Ok(Nat::from(0)) // FIXME: real event
     })
 }
@@ -568,6 +569,7 @@ fn set_approval_for_all(operator: Principal, is_approved: bool) -> Result<Nat, N
             ledger.update_operator_cache(&token_identifier, old_operator, new_operator);
             ledger.approve(caller, &token_identifier, new_operator);
         }
+        // TODO: FIXME: real event
         Ok(Nat::from(0)) // FIXME: real event
     })
 }
@@ -587,6 +589,7 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
+        // TODO: FIXME: real event
         Ok(Nat::from(0)) // FIXME: real event
     })
 }
@@ -614,6 +617,7 @@ fn transfer_from(
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
+        // TODO: FIXME: real event
         Ok(Nat::from(0)) // FIXME: real event
     })
 }
@@ -651,6 +655,7 @@ fn mint(
             },
         );
         ledger.update_owner_cache(&token_identifier, None, Some(to));
+        // TODO: FIXME: real event
         Ok(Nat::from(0)) // FIXME: real event
     })
 }
