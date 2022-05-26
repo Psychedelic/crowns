@@ -15,7 +15,7 @@ import {
 const normalActors = [aliceActor, bobActor, johnActor];
 const allActors = [...normalActors, custodianActor];
 
-test.before(async t => {
+test.before(async () => {
   await custodianActor.setCustodians([
     custodianIdentity.getPrincipal(),
     aliceIdentity.getPrincipal(),
