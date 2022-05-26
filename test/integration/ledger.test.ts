@@ -15,6 +15,15 @@ import {
 const normalActors = [aliceActor, bobActor, johnActor];
 const allActors = [...normalActors, custodianActor];
 
+test.before(async t => {
+  await custodianActor.setCustodians([
+    custodianIdentity.getPrincipal(),
+    aliceIdentity.getPrincipal(),
+    bobIdentity.getPrincipal(),
+    johnIdentity.getPrincipal()
+  ]);
+});
+
 test.serial("simple mint NFT and verify information.", async t => {
   // mint
   t.deepEqual(
