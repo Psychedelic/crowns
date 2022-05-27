@@ -109,11 +109,11 @@ mod ledger {
 
     #[derive(CandidType, Default, Deserialize)]
     pub struct Ledger {
-        metadata: Metadata,
-        tokens: HashMap<TokenIdentifier, TokenMetadata>, // recommend to have sequential id
-        owners: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
-        operators: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
-        tx_count: Nat,
+        pub metadata: Metadata,
+        pub tokens: HashMap<TokenIdentifier, TokenMetadata>, // recommend to have sequential id
+        pub owners: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
+        pub operators: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
+        pub tx_count: Nat,
     }
 
     impl Ledger {
@@ -774,14 +774,36 @@ fn pre_upgrade() {
     })
 }
 
+#[derive(CandidType, Deserialize)]
+    pub struct TxEvent {
+        pub time: u64,
+        pub caller: Principal,
+        pub operation: String,
+        pub details: Vec<(String, GenericValue)>,
+    }
+
+#[derive(CandidType, Default, Deserialize)]
+    pub struct OldLedger {
+        metadata: Metadata,
+        tokens: HashMap<TokenIdentifier, TokenMetadata>, // recommend to have sequential id
+        owners: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
+        operators: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
+        tx_records: Vec<TxEvent>,
+    }
+
 #[post_upgrade]
 fn post_upgrade() {
     ledger::with_mut(|ledger| {
-        match ic_cdk::storage::stable_restore::<(ledger::Ledger, cap_sdk::Archive)>() {
-            Ok((ledger_store, cap_store)) => {
-                *ledger = ledger_store;
+        match ic_cdk::storage::stable_restore::<(OldLedger,)>() {
+            Ok((ledger_store,)) => {
+                ledger.metadata = ledger_store.metadata;
+                ledger.tokens = ledger_store.tokens;
+                ledger.owners = ledger_store.owners;
+                ledger.operators = ledger_store.operators;
+                ledger.tx_count = Nat::from(ledger_store.tx_records.len());
+
                 ledger.metadata_mut().upgraded_at = time();
-                cap_sdk::from_archive(cap_store);
+                handshake(1_000_000_000_000, Some(Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").expect("invalid cap canister")));
             }
             Err(err) => {
                 trap(&format!(
