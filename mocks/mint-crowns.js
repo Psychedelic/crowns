@@ -80,7 +80,7 @@ const amountE8sPerUser = 10_000_000_000;
 
   for (let i = 0; i < userPrincipals.length; i++) {
     promisesForWicpTopup.push(
-      actorWicp.transfer(
+      actorWicp.transferFrom(
         Principal.fromText(userPrincipals[i]),
         BigInt(amountE8sPerUser),
       ),
