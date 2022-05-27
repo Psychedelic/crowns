@@ -17,6 +17,7 @@ type GenericValue = variant {
   TextContent : text;
 };
 type InitArgs = record {
+  cap : opt principal;
   logo : opt text;
   name : opt text;
   custodians : opt vec principal;
@@ -48,6 +49,7 @@ type Result_1 = variant { Ok : bool; Err : NftError };
 type Result_2 = variant { Ok : opt principal; Err : NftError };
 type Stats = record {
   cycles : nat;
+  total_transactions : nat;
   total_unique_holders : nat;
   total_supply : nat;
 };
@@ -117,6 +119,7 @@ service : (opt InitArgs) -> {
   symbol : () -> (opt text) query;
   tokenMetadata : (nat) -> (ManualReply_3) query;
   totalSupply : () -> (nat) query;
+  totalTransactions : () -> (nat) query;
   totalUniqueHolders : () -> (nat) query;
   transfer : (principal, nat) -> (Result);
   transferFrom : (principal, principal, nat) -> (Result);

@@ -1,9 +1,11 @@
+use cap_sdk::{handshake, insert_sync, DetailValue, IndefiniteEvent};
 use compile_time_run::run_command_str;
 use ic_cdk::api::call::ManualReply;
 use ic_cdk::api::{caller, canister_balance128, time, trap};
 use ic_cdk::export::candid::{candid_method, CandidType, Deserialize, Int, Nat};
 use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, post_upgrade, pre_upgrade, query, update};
+
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::ops::Not;
@@ -16,6 +18,7 @@ mod types {
         pub logo: Option<String>,
         pub symbol: Option<String>,
         pub custodians: Option<HashSet<Principal>>,
+        pub cap: Option<Principal>,
     }
     #[derive(CandidType, Default, Deserialize)]
     pub struct Metadata {
@@ -28,6 +31,7 @@ mod types {
     }
     #[derive(CandidType)]
     pub struct Stats {
+        pub total_transactions: Nat,
         pub total_supply: Nat,
         pub cycles: Nat,
         pub total_unique_holders: Nat,
@@ -109,6 +113,7 @@ mod ledger {
         tokens: HashMap<TokenIdentifier, TokenMetadata>, // recommend to have sequential id
         owners: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
         operators: HashMap<Principal, HashSet<TokenIdentifier>>, // quick lookup
+        tx_count: Nat,
     }
 
     impl Ledger {
@@ -124,6 +129,12 @@ mod ledger {
                         metadata.custodians.insert(custodians);
                     }
                 }
+
+                // initiate cap with specified canister, otherwise use mainnet canister
+                handshake(1_000_000_000_000, args.cap);
+            } else {
+                // default to mainnet cap canister if no args are specified
+                handshake(1_000_000_000_000, None);
             }
             metadata.created_at = time();
             metadata.upgraded_at = time();
@@ -139,6 +150,10 @@ mod ledger {
 
         pub fn tokens_count(&self) -> usize {
             self.tokens.len()
+        }
+
+        pub fn tx_count(&self) -> Nat {
+            self.tx_count.clone()
         }
 
         pub fn is_token_existed(&self, token_identifier: &TokenIdentifier) -> bool {
@@ -296,6 +311,11 @@ mod ledger {
             token_metadata.transferred_at = Some(time());
             token_metadata.operator = None;
         }
+
+        pub fn inc_tx(&mut self) -> Nat {
+            self.tx_count += 1;
+            self.tx_count.clone()
+        }
     }
 }
 
@@ -405,6 +425,12 @@ fn total_supply() -> Nat {
     ledger::with(|ledger| Nat::from(ledger.tokens_count()))
 }
 
+#[query(name = "totalTransactions")]
+#[candid_method(query, rename = "totalTransactions")]
+fn total_transactions() -> Nat {
+    ledger::with(|ledger| ledger.tx_count())
+}
+
 #[query(name = "cycles")]
 #[candid_method(query, rename = "cycles")]
 fn cycles() -> Nat {
@@ -421,6 +447,7 @@ fn total_unique_holders() -> Nat {
 #[candid_method(query, rename = "stats")]
 fn stats() -> Stats {
     Stats {
+        total_transactions: total_transactions(),
         total_supply: total_supply(),
         cycles: cycles(),
         total_unique_holders: total_unique_holders(),
@@ -545,7 +572,20 @@ fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat
             Some(operator),
         );
         ledger.approve(caller, &token_identifier, Some(operator));
-        Ok(Nat::from(0)) // FIXME: real event
+
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "approve".into(),
+            details: vec![
+                ("operator".into(), DetailValue::from(operator)),
+                (
+                    "token_identifier".into(),
+                    DetailValue::from(token_identifier),
+                ),
+            ],
+        });
+
+        Ok(ledger.inc_tx())
     })
 }
 
@@ -568,7 +608,24 @@ fn set_approval_for_all(operator: Principal, is_approved: bool) -> Result<Nat, N
             ledger.update_operator_cache(&token_identifier, old_operator, new_operator);
             ledger.approve(caller, &token_identifier, new_operator);
         }
-        Ok(Nat::from(0)) // FIXME: real event
+
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "setApprovalForAll".into(),
+            details: vec![
+                ("operator".into(), DetailValue::from(operator)),
+                (
+                    "is_approved".into(),
+                    if is_approved {
+                        DetailValue::True
+                    } else {
+                        DetailValue::False
+                    },
+                ),
+            ],
+        });
+
+        Ok(ledger.inc_tx())
     })
 }
 
@@ -587,7 +644,21 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
-        Ok(Nat::from(0)) // FIXME: real event
+
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "transfer".into(),
+            details: vec![
+                ("owner".into(), DetailValue::from(caller)),
+                ("to".into(), DetailValue::from(to)),
+                (
+                    "token_identifier".into(),
+                    DetailValue::from(token_identifier),
+                ),
+            ],
+        });
+
+        Ok(ledger.inc_tx())
     })
 }
 
@@ -614,7 +685,21 @@ fn transfer_from(
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
-        Ok(Nat::from(0)) // FIXME: real event
+
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "transferFrom".into(),
+            details: vec![
+                ("owner".into(), DetailValue::from(owner)),
+                ("to".into(), DetailValue::from(to)),
+                (
+                    "token_identifier".into(),
+                    DetailValue::from(token_identifier),
+                ),
+            ],
+        });
+
+        Ok(ledger.inc_tx())
     })
 }
 
@@ -651,7 +736,20 @@ fn mint(
             },
         );
         ledger.update_owner_cache(&token_identifier, None, Some(to));
-        Ok(Nat::from(0)) // FIXME: real event
+
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "mint".into(),
+            details: vec![
+                ("to".into(), DetailValue::from(to)),
+                (
+                    "token_identifier".into(),
+                    DetailValue::from(token_identifier),
+                ),
+            ],
+        });
+
+        Ok(ledger.inc_tx())
     })
 }
 
@@ -664,7 +762,10 @@ fn mint(
 #[pre_upgrade]
 fn pre_upgrade() {
     ledger::with(|ledger| {
-        if let Err(err) = ic_cdk::storage::stable_save::<(&ledger::Ledger,)>((ledger,)) {
+        if let Err(err) = ic_cdk::storage::stable_save::<(&ledger::Ledger, cap_sdk::Archive)>((
+            ledger,
+            cap_sdk::archive(),
+        )) {
             trap(&format!(
                 "An error occurred when saving to stable memory (pre_upgrade): {:?}",
                 err
@@ -675,11 +776,12 @@ fn pre_upgrade() {
 
 #[post_upgrade]
 fn post_upgrade() {
-    ledger::with_mut(
-        |ledger| match ic_cdk::storage::stable_restore::<(ledger::Ledger,)>() {
-            Ok((ledger_store,)) => {
+    ledger::with_mut(|ledger| {
+        match ic_cdk::storage::stable_restore::<(ledger::Ledger, cap_sdk::Archive)>() {
+            Ok((ledger_store, cap_store)) => {
                 *ledger = ledger_store;
                 ledger.metadata_mut().upgraded_at = time();
+                cap_sdk::from_archive(cap_store);
             }
             Err(err) => {
                 trap(&format!(
@@ -687,8 +789,8 @@ fn post_upgrade() {
                     err
                 ));
             }
-        },
-    )
+        }
+    })
 }
 
 #[cfg(any(target_arch = "wasm32", test))]
