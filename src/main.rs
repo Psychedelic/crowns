@@ -580,7 +580,7 @@ fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat
                 ("operator".into(), DetailValue::from(operator)),
                 (
                     "token_identifier".into(),
-                    DetailValue::from(token_identifier),
+                    DetailValue::from(token_identifier.to_string()),
                 ),
             ],
         });
@@ -653,7 +653,7 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
                 ("to".into(), DetailValue::from(to)),
                 (
                     "token_identifier".into(),
-                    DetailValue::from(token_identifier),
+                    DetailValue::from(token_identifier.to_string()),
                 ),
             ],
         });
@@ -694,7 +694,7 @@ fn transfer_from(
                 ("to".into(), DetailValue::from(to)),
                 (
                     "token_identifier".into(),
-                    DetailValue::from(token_identifier),
+                    DetailValue::from(token_identifier.to_string()),
                 ),
             ],
         });
@@ -744,7 +744,7 @@ fn mint(
                 ("to".into(), DetailValue::from(to)),
                 (
                     "token_identifier".into(),
-                    DetailValue::from(token_identifier),
+                    DetailValue::from(token_identifier.to_string()),
                 ),
             ],
         });
