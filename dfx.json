@@ -25,6 +25,9 @@
     },
     "ic": {
       "bind": "ic0.app"
+    },
+    "test": {
+      "bind": "ic0.app"
     }
   }
 }
