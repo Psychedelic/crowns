@@ -644,6 +644,19 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
+        
+        insert_sync(IndefiniteEvent {
+            caller,
+            operation: "transfer".into(),
+            details: vec![
+                ("owner".into(), DetailValue::from(caller)),
+                ("to".into(), DetailValue::from(to)),
+                (
+                    "token_identifier".into(),
+                    DetailValue::from(token_identifier.to_string()),
+                ),
+            ],
+        });
 
         Ok(ledger.inc_tx())
     })
@@ -723,18 +736,6 @@ fn mint(
             },
         );
         ledger.update_owner_cache(&token_identifier, None, Some(to));
-
-        insert_sync(IndefiniteEvent {
-            caller,
-            operation: "mint".into(),
-            details: vec![
-                ("to".into(), DetailValue::from(to)),
-                (
-                    "token_identifier".into(),
-                    DetailValue::from(token_identifier.to_string()),
-                ),
-            ],
-        });
 
         Ok(ledger.inc_tx())
     })
