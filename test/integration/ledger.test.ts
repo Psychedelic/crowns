@@ -1,3 +1,5 @@
+import {Principal} from "@dfinity/principal10";
+import {CapRoot} from "@psychedelic/cap-js";
 import test from "ava";
 
 import {TokenMetadata} from "../factory/idl.d";
@@ -9,7 +11,11 @@ import {
   custodianActor,
   custodianIdentity,
   johnActor,
-  johnIdentity
+  johnIdentity,
+  capRouter,
+  nftCanisterId,
+  // stringify,
+  host
 } from "../setup";
 
 const normalActors = [aliceActor, bobActor, johnActor];
@@ -26,11 +32,37 @@ test.before(async () => {
   ]);
 });
 
+let capRootBucket: string;
+const capRoot = async () => {
+  if (capRootBucket) {
+    return await CapRoot.init({
+      host,
+      canisterId: capRootBucket
+    });
+  } else {
+    throw new Error("no cap root bucket");
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const testTxns = async (transactions: any[]): Promise<any[]> => {
+  const cap = await capRoot();
+
+  return await Promise.all(
+    transactions.map(async ({id, tx}) => {
+      const resp = await cap.get_transaction(BigInt(id));
+      const transaction = resp.Found[0][0];
+      transaction.details = Object.fromEntries(transaction.details);
+      return {txResp: transaction, tx};
+    })
+  );
+};
+
 test.serial("simple mint NFT and verify information.", async t => {
   // mint
   t.deepEqual(
     await custodianActor.mint(aliceIdentity.getPrincipal(), BigInt(1), [["A", {Nat64Content: BigInt(9999)}]]),
-    {Ok: BigInt(1)}
+    {Ok: BigInt(0)}
   );
 
   // verify token
@@ -184,16 +216,92 @@ test.skip("error on query non-existed information.", async t => {
   });
 });
 
+test.serial("Get cap token contract root bucket", async t => {
+  // wait 3s to ensure root bucket is created
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  const principal = Principal.fromText(nftCanisterId);
+  const {canister: bucketResponse} = await capRouter.get_token_contract_root_bucket({
+    tokenId: principal,
+    witness: false
+  });
+  capRootBucket = bucketResponse.toString();
+  console.log(capRootBucket);
+  t.true(capRootBucket.length > 0);
+});
+
+test.serial("verify basic mint transaction.", async t => {
+  const txns = await testTxns([
+    {
+      id: "0",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "mint",
+        details: {
+          token_identifier: {Text: "1"},
+          to: {Principal: aliceIdentity.getPrincipal()}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
+  });
+});
+
 test.serial("mint NFTs.", async t => {
   t.deepEqual(
     await custodianActor.mint(aliceIdentity.getPrincipal(), BigInt(2), [["B", {Int64Content: BigInt(1234)}]]),
-    {Ok: BigInt(2)}
+    {Ok: BigInt(1)}
   );
   t.deepEqual(await custodianActor.mint(bobIdentity.getPrincipal(), BigInt(3), [["C", {Int32Content: 5678}]]), {
-    Ok: BigInt(3)
+    Ok: BigInt(2)
   });
   t.deepEqual(await custodianActor.mint(johnIdentity.getPrincipal(), BigInt(4), [["D", {TextContent: "∆≈ç√∫"}]]), {
-    Ok: BigInt(4)
+    Ok: BigInt(3)
+  });
+});
+
+test.serial("verify transactions after mints", async t => {
+  const txns = await testTxns([
+    {
+      id: "1",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "mint",
+        details: {
+          token_identifier: {Text: "2"},
+          to: {Principal: aliceIdentity.getPrincipal()}
+        }
+      }
+    },
+    {
+      id: "2",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "mint",
+        details: {
+          token_identifier: {Text: "3"},
+          to: {Principal: bobIdentity.getPrincipal()}
+        }
+      }
+    },
+    {
+      id: "3",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "mint",
+        details: {
+          token_identifier: {Text: "4"},
+          to: {Principal: johnIdentity.getPrincipal()}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
   });
 });
 
@@ -418,10 +526,10 @@ test.serial("verify mint information.", async t => {
 });
 
 test.serial("approve NFTs.", async t => {
-  t.deepEqual(await bobActor.approve(aliceIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(5)});
-  t.deepEqual(await johnActor.approve(aliceIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(6)});
-  t.deepEqual(await aliceActor.approve(bobIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(7)});
-  t.deepEqual(await aliceActor.approve(johnIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(8)});
+  t.deepEqual(await bobActor.approve(aliceIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(4)});
+  t.deepEqual(await johnActor.approve(aliceIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(5)});
+  t.deepEqual(await aliceActor.approve(bobIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(6)});
+  t.deepEqual(await aliceActor.approve(johnIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(7)});
 
   // verify isApprovedForAll
   (
@@ -436,6 +544,59 @@ test.serial("approve NFTs.", async t => {
       ...allActors.map(actor => actor.isApprovedForAll(aliceIdentity.getPrincipal(), johnIdentity.getPrincipal()))
     ])
   ).forEach(result => t.deepEqual(result, {Ok: false}));
+});
+
+test.serial("verify transactions after approval.", async t => {
+  const txns = await testTxns([
+    {
+      id: "4",
+      tx: {
+        caller: bobIdentity.getPrincipal(),
+        operation: "approve",
+        details: {
+          operator: {Principal: aliceIdentity.getPrincipal()},
+          token_identifier: {Text: "3"}
+        }
+      }
+    },
+    {
+      id: "5",
+      tx: {
+        caller: johnIdentity.getPrincipal(),
+        operation: "approve",
+        details: {
+          operator: {Principal: aliceIdentity.getPrincipal()},
+          token_identifier: {Text: "4"}
+        }
+      }
+    },
+    {
+      id: "6",
+      tx: {
+        caller: aliceIdentity.getPrincipal(),
+        operation: "approve",
+        details: {
+          operator: {Principal: bobIdentity.getPrincipal()},
+          token_identifier: {Text: "1"}
+        }
+      }
+    },
+    {
+      id: "7",
+      tx: {
+        caller: aliceIdentity.getPrincipal(),
+        operation: "approve",
+        details: {
+          operator: {Principal: johnIdentity.getPrincipal()},
+          token_identifier: {Text: "2"}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
+  });
 });
 
 test.serial("verify stats after approve.", async t => {
@@ -778,10 +939,10 @@ test.serial("error on unauthorize owner when approve.", async t => {
 });
 
 test.serial("approve NFTs (new operator).", async t => {
-  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(9)});
-  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(10)});
-  t.deepEqual(await bobActor.approve(custodianIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(11)});
-  t.deepEqual(await johnActor.approve(custodianIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(12)});
+  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(1)), {Ok: BigInt(8)});
+  t.deepEqual(await aliceActor.approve(custodianIdentity.getPrincipal(), BigInt(2)), {Ok: BigInt(9)});
+  t.deepEqual(await bobActor.approve(custodianIdentity.getPrincipal(), BigInt(3)), {Ok: BigInt(10)});
+  t.deepEqual(await johnActor.approve(custodianIdentity.getPrincipal(), BigInt(4)), {Ok: BigInt(11)});
 });
 
 test.serial("verify stats after approve (new operator).", async t => {
@@ -1056,7 +1217,7 @@ test.serial("verify approve information after updated to new operator.", async t
   );
 });
 
-test.serial("error on query old operator information.", async t => {
+test.serial("error on querying old operator information.", async t => {
   // operatorTokenMetadata error when non-existed operator
   (await Promise.all(allActors.map(actor => actor.operatorTokenMetadata(aliceIdentity.getPrincipal())))).forEach(
     result => {
@@ -1111,7 +1272,7 @@ test.serial("error on self transferFrom.", async t => {
 });
 
 // invalid owner
-test.serial("error on unauthorize owner when transferFrom.", async t => {
+test.serial("error on unauthorized owner when calling transferFrom.", async t => {
   t.deepEqual(
     await custodianActor.transferFrom(custodianIdentity.getPrincipal(), aliceIdentity.getPrincipal(), BigInt(1)),
     {
@@ -1133,7 +1294,7 @@ test.serial("error on unauthorize owner when transferFrom.", async t => {
 });
 
 // invalid operator
-test.serial("error on unauthorize operator when transferFrom.", async t => {
+test.serial("error on unauthorized operator when calling transferFrom.", async t => {
   t.deepEqual(await bobActor.transferFrom(aliceIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(1)), {
     Err: {UnauthorizedOperator: null}
   });
@@ -1152,23 +1313,80 @@ test.serial("transferFrom.", async t => {
   t.deepEqual(
     await custodianActor.transferFrom(aliceIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(1)),
     {
-      Ok: BigInt(13)
+      Ok: BigInt(12)
     }
   );
   t.deepEqual(
     await custodianActor.transferFrom(aliceIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(2)),
     {
-      Ok: BigInt(14)
+      Ok: BigInt(13)
     }
   );
   t.deepEqual(
     await custodianActor.transferFrom(bobIdentity.getPrincipal(), custodianIdentity.getPrincipal(), BigInt(3)),
     {
-      Ok: BigInt(15)
+      Ok: BigInt(14)
     }
   );
   t.deepEqual(await custodianActor.transferFrom(johnIdentity.getPrincipal(), aliceIdentity.getPrincipal(), BigInt(4)), {
-    Ok: BigInt(16)
+    Ok: BigInt(15)
+  });
+});
+
+test.serial("verify transactions after transferFrom.", async t => {
+  const txns = await testTxns([
+    {
+      id: "12",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transferFrom",
+        details: {
+          owner: {Principal: aliceIdentity.getPrincipal()},
+          to: {Principal: custodianIdentity.getPrincipal()},
+          token_identifier: {Text: "1"}
+        }
+      }
+    },
+    {
+      id: "13",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transferFrom",
+        details: {
+          owner: {Principal: aliceIdentity.getPrincipal()},
+          to: {Principal: custodianIdentity.getPrincipal()},
+          token_identifier: {Text: "2"}
+        }
+      }
+    },
+    {
+      id: "14",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transferFrom",
+        details: {
+          owner: {Principal: bobIdentity.getPrincipal()},
+          to: {Principal: custodianIdentity.getPrincipal()},
+          token_identifier: {Text: "3"}
+        }
+      }
+    },
+    {
+      id: "15",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transferFrom",
+        details: {
+          owner: {Principal: johnIdentity.getPrincipal()},
+          to: {Principal: aliceIdentity.getPrincipal()},
+          token_identifier: {Text: "4"}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
   });
 });
 
@@ -1407,7 +1625,7 @@ test.serial("error on self transfer.", async t => {
 });
 
 // invalid owner
-test.serial("error on unauthorize owner when transfer.", async t => {
+test.serial("error on unauthorized owner when calling transfer.", async t => {
   t.deepEqual(await aliceActor.transfer(custodianIdentity.getPrincipal(), BigInt(1)), {
     Err: {UnauthorizedOwner: null}
   });
@@ -1424,16 +1642,69 @@ test.serial("error on unauthorize owner when transfer.", async t => {
 
 test.serial("transfer.", async t => {
   t.deepEqual(await custodianActor.transfer(johnIdentity.getPrincipal(), BigInt(1)), {
-    Ok: BigInt(17)
+    Ok: BigInt(16)
   });
   t.deepEqual(await custodianActor.transfer(johnIdentity.getPrincipal(), BigInt(2)), {
-    Ok: BigInt(18)
+    Ok: BigInt(17)
   });
   t.deepEqual(await custodianActor.transfer(bobIdentity.getPrincipal(), BigInt(3)), {
-    Ok: BigInt(19)
+    Ok: BigInt(18)
   });
   t.deepEqual(await aliceActor.transfer(bobIdentity.getPrincipal(), BigInt(4)), {
-    Ok: BigInt(20)
+    Ok: BigInt(19)
+  });
+});
+
+test.serial("verify transactions after transfer.", async t => {
+  const txns = await testTxns([
+    {
+      id: "16",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transfer",
+        details: {
+          to: {Principal: johnIdentity.getPrincipal()},
+          token_identifier: {Text: "1"}
+        }
+      }
+    },
+    {
+      id: "17",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transfer",
+        details: {
+          to: {Principal: johnIdentity.getPrincipal()},
+          token_identifier: {Text: "2"}
+        }
+      }
+    },
+    {
+      id: "18",
+      tx: {
+        caller: custodianIdentity.getPrincipal(),
+        operation: "transfer",
+        details: {
+          to: {Principal: bobIdentity.getPrincipal()},
+          token_identifier: {Text: "3"}
+        }
+      }
+    },
+    {
+      id: "19",
+      tx: {
+        caller: aliceIdentity.getPrincipal(),
+        operation: "transfer",
+        details: {
+          to: {Principal: bobIdentity.getPrincipal()},
+          token_identifier: {Text: "4"}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
   });
 });
 
@@ -1656,8 +1927,8 @@ test.serial("verify transfer information.", async t => {
 });
 
 test.serial("setApprovalForAll(true).", async t => {
-  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), true), {Ok: BigInt(21)});
-  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), true), {Ok: BigInt(22)});
+  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), true), {Ok: BigInt(20)});
+  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), true), {Ok: BigInt(21)});
 
   // verify isApprovedForAll
   (
@@ -1666,6 +1937,37 @@ test.serial("setApprovalForAll(true).", async t => {
       ...allActors.map(actor => actor.isApprovedForAll(johnIdentity.getPrincipal(), bobIdentity.getPrincipal()))
     ])
   ).forEach(result => t.deepEqual(result, {Ok: true}));
+});
+
+test.serial("verify transactions after SetApprovalForAll(true).", async t => {
+  const txns = await testTxns([
+    {
+      id: "20",
+      tx: {
+        caller: bobIdentity.getPrincipal(),
+        operation: "setApprovalForAll",
+        details: {
+          operator: {Principal: johnIdentity.getPrincipal()},
+          is_approved: {True: null}
+        }
+      }
+    },
+    {
+      id: "21",
+      tx: {
+        caller: johnIdentity.getPrincipal(),
+        operation: "setApprovalForAll",
+        details: {
+          operator: {Principal: bobIdentity.getPrincipal()},
+          is_approved: {True: null}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
+  });
 });
 
 test.serial("verify stats after setApprovalForAll(true).", async t => {
@@ -1982,8 +2284,8 @@ test.serial("error on self approve when setApprovalForAll.", async t => {
 });
 
 test.serial("setApprovalForAll(false).", async t => {
-  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), false), {Ok: BigInt(23)});
-  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), false), {Ok: BigInt(24)});
+  t.deepEqual(await bobActor.setApprovalForAll(johnIdentity.getPrincipal(), false), {Ok: BigInt(22)});
+  t.deepEqual(await johnActor.setApprovalForAll(bobIdentity.getPrincipal(), false), {Ok: BigInt(23)});
 
   // verify isApprovedForAll
   (
@@ -1992,6 +2294,37 @@ test.serial("setApprovalForAll(false).", async t => {
       ...allActors.map(actor => actor.isApprovedForAll(johnIdentity.getPrincipal(), bobIdentity.getPrincipal()))
     ])
   ).forEach(result => t.deepEqual(result, {Ok: false}));
+});
+
+test.serial("verify transactions after SetApprovalForAll(false).", async t => {
+  const txns = await testTxns([
+    {
+      id: "22",
+      tx: {
+        caller: bobIdentity.getPrincipal(),
+        operation: "setApprovalForAll",
+        details: {
+          operator: {Principal: johnIdentity.getPrincipal()},
+          is_approved: {False: null}
+        }
+      }
+    },
+    {
+      id: "23",
+      tx: {
+        caller: johnIdentity.getPrincipal(),
+        operation: "setApprovalForAll",
+        details: {
+          operator: {Principal: bobIdentity.getPrincipal()},
+          is_approved: {False: null}
+        }
+      }
+    }
+  ]);
+
+  txns.map(({txResp, tx}) => {
+    t.like(txResp, tx);
+  });
 });
 
 test.serial("verify stats after setApprovalForAll(false).", async t => {
