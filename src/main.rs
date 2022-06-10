@@ -552,7 +552,7 @@ fn is_approved_for_all(owner: Principal, operator: Principal) -> Result<bool, Nf
 // ==================================================================================================
 // core api
 // ==================================================================================================
-#[update(name = "approve", guard = "is_canister_custodian")]
+#[update(name = "approve")]
 #[candid_method(update, rename = "approve")]
 fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
@@ -592,7 +592,7 @@ fn approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat
 /// since we've supported single operator per owner only
 /// so when `is_approved` is false that mean set all caller's nfts to None regardless of `operator`
 /// otherwise set all caller's nfts to `operator`
-#[update(name = "setApprovalForAll", guard = "is_canister_custodian")]
+#[update(name = "setApprovalForAll")]
 #[candid_method(update, rename = "setApprovalForAll")]
 fn set_approval_for_all(operator: Principal, is_approved: bool) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
@@ -629,7 +629,7 @@ fn set_approval_for_all(operator: Principal, is_approved: bool) -> Result<Nat, N
     })
 }
 
-#[update(name = "transfer", guard = "is_canister_custodian")]
+#[update(name = "transfer")]
 #[candid_method(update, rename = "transfer")]
 fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
@@ -662,7 +662,7 @@ fn transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, Nft
     })
 }
 
-#[update(name = "transferFrom", guard = "is_canister_custodian")]
+#[update(name = "transferFrom")]
 #[candid_method(update, rename = "transferFrom")]
 fn transfer_from(
     owner: Principal,
