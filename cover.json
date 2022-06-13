@@ -1,0 +1,13 @@
+{
+  "ownerId": "ffuck-kxghi-gyvia-r5htr-246cy-acq5u-2tdgd-avtvf-jyqbt-xtmf7-cae",
+  "canisterId": "vlhm2-4iaaa-aaaam-qaatq-cai",
+  "canisterName": "crowns",
+  "repoUrl": "psychedelic/crowns",
+  "commitHash": "fb8f1afd2b5108817624a853552770a84f0f2641",
+  "rustVersion": "1.61.0",
+  "dfxVersion": "0.9.3",
+  "optimizeCount": 1,
+  "publicKey": "0488bb751d43a89a22e41e6966d1bd6d9d018d0dcec76d4d553436b2928be46426385cf69446eb02b3248686ed116cfa06d76323577224b042076bf53af9f3b67a",
+  "signature": "db933ab4213e1dd1efc405b3936e8b7851187f8f7647f32e8b0dfa05456ca6ff61c493152719b9e8b349c796141ef8bde5d44dc28a5a412a0bd95214f8ff29b9",
+  "timestamp": 1655137089484
+}
