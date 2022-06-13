@@ -678,17 +678,24 @@ fn transfer_from(
             .eq(&Some(owner))
             .then(|| ())
             .ok_or(NftError::UnauthorizedOwner)?;
-        old_operator
-            .eq(&Some(caller))
-            .then(|| ())
-            .ok_or(NftError::UnauthorizedOperator)?;
+
+        let mut operation = "transferFrom".into();
+        match caller {
+            old_owner => {
+                operation = "transfer".into();
+            }
+            old_operator => (),
+            _ => return Err(NftError::UnauthorizedOwner),
+        }
+
         ledger.update_owner_cache(&token_identifier, old_owner, Some(to));
         ledger.update_operator_cache(&token_identifier, old_operator, None);
         ledger.transfer(caller, &token_identifier, Some(to));
 
+        //
         insert_sync(IndefiniteEvent {
             caller,
-            operation: "transferFrom".into(),
+            operation,
             details: vec![
                 ("owner".into(), DetailValue::from(owner)),
                 ("to".into(), DetailValue::from(to)),
