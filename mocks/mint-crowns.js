@@ -15,13 +15,14 @@ const amountE8sPerUser = 10_000_000_000;
 
 (async () => {
   const {
-    localCrownsCanisterId,
-    localWicpCanisterId,
     host,
     aggrCrownsJsonPath,
     chunkSize,
     chunkPromiseDelayMs,
   } = settings;
+
+  const localCrownsCanisterId = process.env.CROWNS_ID;
+  const localWicpCanisterId = process.env.WICP_ID;
 
   const { identity } = systemPrincipal;
 
