@@ -1,6 +1,6 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Secp256k1KeyIdentity } from "@dfinity/identity";
-import { idlFactory as mkpIdlFactory } from "../migrate/factory/idl.js";
+import { idlFactory as crownsIdlFactory } from "../migrate/factory/idl.js";
 import wicpIdlFactory from './factory/wicp.js';
 import fetch from "isomorphic-fetch";
 import { readFileSync } from "fs";
@@ -35,7 +35,7 @@ const amountE8sPerUser = 10_000_000_000;
     console.error(err);
   }
 
-  const actorMkp = Actor.createActor(mkpIdlFactory, {
+  const actorMkp = Actor.createActor(crownsIdlFactory, {
     canisterId: localCrownsCanisterId,
     agent,
   });
