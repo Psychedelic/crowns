@@ -1,6 +1,6 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Secp256k1KeyIdentity } from "@dfinity/identity";
-import { idlFactory as crownsIdlFactory } from "../migrate/factory/idl.js";
+import { idlFactory as crownsIdlFactory } from "./factory/idl.js";
 import wicpIdlFactory from './factory/wicp.js';
 import fetch from "isomorphic-fetch";
 import { readFileSync } from "fs";
@@ -27,7 +27,7 @@ const amountE8sPerUser = 10_000_000_000;
   const { identity } = systemPrincipal;
 
   const agent = new HttpAgent({ host, fetch, identity });
- 
+
   try {
     await agent.fetchRootKey();
   } catch (err) {
@@ -44,26 +44,26 @@ const amountE8sPerUser = 10_000_000_000;
     canisterId: localWicpCanisterId,
     agent,
   });
-  
+
   const data = JSON.parse(readFileSync(aggrCrownsJsonPath, "utf-8"));
-  
+
   const chunks = data.reduce((all, one, i) => {
     const chIdx = Math.floor(i / chunkSize);
     all[chIdx] = (all[chIdx] || []).concat(one);
     return all;
   }, []);
-  
+
   const hasUserPrincipalAtIndex = (parentId, idx, defaultPrincipal) => {
     if (parentId > 1) return defaultPrincipal;
-  
+
     return userPrincipals[idx] || defaultPrincipal;
   };
 
   const maxChunks = process.env.MAX_CHUNKS || chunks.length;
-  
+
   for (let i = 0; i < maxChunks; i++) {
     console.log("Currently processing chunk nr ", i);
-  
+
     try {
       await delay(chunkPromiseDelayMs);
       await Promise.all(
