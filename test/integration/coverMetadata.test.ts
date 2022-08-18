@@ -6,13 +6,13 @@ const normalActors = [aliceActor, bobActor, johnActor];
 const allActors = [...normalActors, custodianActor];
 
 test("COVER metadata.", async t => {
-  (await Promise.all(allActors.map(actor => actor.gitCommitHash()))).forEach(result =>
+  (await Promise.all(allActors.map(actor => actor.dip721GitCommitHash()))).forEach(result =>
     t.true(typeof result === "string" && result !== "")
   );
-  (await Promise.all(allActors.map(actor => actor.rustToolchainInfo()))).forEach(result =>
+  (await Promise.all(allActors.map(actor => actor.dip721RustToolchainInfo()))).forEach(result =>
     t.true(typeof result === "string" && result !== "")
   );
-  (await Promise.all(allActors.map(actor => actor.dfxInfo()))).forEach(result =>
+  (await Promise.all(allActors.map(actor => actor.dip721DfxInfo()))).forEach(result =>
     t.true(typeof result === "string" && result !== "")
   );
 });
