@@ -91,12 +91,11 @@ type Vec = vec record {
   };
 };
 service : (opt InitArgs) -> {
+  dfxInfo : () -> (text) query;
   dip721Approve : (principal, nat) -> (Result);
   dip721BalanceOf : (principal) -> (Result) query;
   dip721Custodians : () -> (vec principal) query;
   dip721Cycles : () -> (nat) query;
-  dip721DfxInfo : () -> (text) query;
-  dip721GitCommitHash : () -> (text) query;
   dip721IsApprovedForAll : (principal, principal) -> (Result_1) query;
   dip721Logo : () -> (opt text) query;
   dip721Metadata : () -> (ManualReply) query;
@@ -108,7 +107,6 @@ service : (opt InitArgs) -> {
   dip721OwnerOf : (nat) -> (Result_2) query;
   dip721OwnerTokenIdentifiers : (principal) -> (ManualReply_1) query;
   dip721OwnerTokenMetadata : (principal) -> (ManualReply_2) query;
-  dip721RustToolchainInfo : () -> (text) query;
   dip721SetApprovalForAll : (principal, bool) -> (Result);
   dip721SetCustodians : (vec principal) -> ();
   dip721SetLogo : (text) -> ();
@@ -123,4 +121,6 @@ service : (opt InitArgs) -> {
   dip721TotalUniqueHolders : () -> (nat) query;
   dip721Transfer : (principal, nat) -> (Result);
   dip721TransferFrom : (principal, principal, nat) -> (Result);
+  gitCommitHash : () -> (text) query;
+  rustToolchainInfo : () -> (text) query;
 }

@@ -97,12 +97,11 @@ export type Vec = Array<
   ]
 >;
 export interface _SERVICE {
+  'dfxInfo' : ActorMethod<[], string>,
   'dip721Approve' : ActorMethod<[Principal, bigint], Result>,
   'dip721BalanceOf' : ActorMethod<[Principal], Result>,
   'dip721Custodians' : ActorMethod<[], Array<Principal>>,
   'dip721Cycles' : ActorMethod<[], bigint>,
-  'dip721DfxInfo' : ActorMethod<[], string>,
-  'dip721GitCommitHash' : ActorMethod<[], string>,
   'dip721IsApprovedForAll' : ActorMethod<[Principal, Principal], Result_1>,
   'dip721Logo' : ActorMethod<[], [] | [string]>,
   'dip721Metadata' : ActorMethod<[], ManualReply>,
@@ -117,7 +116,6 @@ export interface _SERVICE {
   'dip721OwnerOf' : ActorMethod<[bigint], Result_2>,
   'dip721OwnerTokenIdentifiers' : ActorMethod<[Principal], ManualReply_1>,
   'dip721OwnerTokenMetadata' : ActorMethod<[Principal], ManualReply_2>,
-  'dip721RustToolchainInfo' : ActorMethod<[], string>,
   'dip721SetApprovalForAll' : ActorMethod<[Principal, boolean], Result>,
   'dip721SetCustodians' : ActorMethod<[Array<Principal>], undefined>,
   'dip721SetLogo' : ActorMethod<[string], undefined>,
@@ -132,4 +130,6 @@ export interface _SERVICE {
   'dip721TotalUniqueHolders' : ActorMethod<[], bigint>,
   'dip721Transfer' : ActorMethod<[Principal, bigint], Result>,
   'dip721TransferFrom' : ActorMethod<[Principal, Principal, bigint], Result>,
+  'gitCommitHash' : ActorMethod<[], string>,
+  'rustToolchainInfo' : ActorMethod<[], string>,
 }

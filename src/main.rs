@@ -339,20 +339,20 @@ fn is_canister_custodian() -> Result<(), String> {
 // ==================================================================================================
 // cover metadata
 // ==================================================================================================
-#[query(name = "dip721GitCommitHash")]
-#[candid_method(query, rename = "dip721GitCommitHash")]
+#[query(name = "gitCommitHash")]
+#[candid_method(query, rename = "gitCommitHash")]
 fn dip721_git_commit_hash() -> &'static str {
     run_command_str!("git", "rev-parse", "HEAD")
 }
 
-#[query(name = "dip721RustToolchainInfo")]
-#[candid_method(query, rename = "dip721RustToolchainInfo")]
+#[query(name = "rustToolchainInfo")]
+#[candid_method(query, rename = "rustToolchainInfo")]
 fn dip721_rust_toolchain_info() -> &'static str {
     run_command_str!("rustup", "show")
 }
 
-#[query(name = "dip721DfxInfo")]
-#[candid_method(query, rename = "dip721DfxInfo")]
+#[query(name = "dfxInfo")]
+#[candid_method(query, rename = "dfxInfo")]
 fn dip721_dfx_info() -> &'static str {
     run_command_str!("dfx", "--version")
 }

@@ -110,12 +110,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const ManualReply_3 = IDL.Variant({ 'Ok' : TokenMetadata, 'Err' : NftError });
   return IDL.Service({
+    'dfxInfo' : IDL.Func([], [IDL.Text], ['query']),
     'dip721Approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'dip721BalanceOf' : IDL.Func([IDL.Principal], [Result], ['query']),
     'dip721Custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'dip721Cycles' : IDL.Func([], [IDL.Nat], ['query']),
-    'dip721DfxInfo' : IDL.Func([], [IDL.Text], ['query']),
-    'dip721GitCommitHash' : IDL.Func([], [IDL.Text], ['query']),
     'dip721IsApprovedForAll' : IDL.Func(
         [IDL.Principal, IDL.Principal],
         [Result_1],
@@ -151,7 +150,6 @@ export const idlFactory = ({ IDL }) => {
         [ManualReply_2],
         ['query'],
       ),
-    'dip721RustToolchainInfo' : IDL.Func([], [IDL.Text], ['query']),
     'dip721SetApprovalForAll' : IDL.Func(
         [IDL.Principal, IDL.Bool],
         [Result],
@@ -178,6 +176,8 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
+    'gitCommitHash' : IDL.Func([], [IDL.Text], ['query']),
+    'rustToolchainInfo' : IDL.Func([], [IDL.Text], ['query']),
   });
 };
 export const init = ({ IDL }) => {
