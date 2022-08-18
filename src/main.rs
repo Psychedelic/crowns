@@ -339,20 +339,20 @@ fn is_canister_custodian() -> Result<(), String> {
 // ==================================================================================================
 // cover metadata
 // ==================================================================================================
-#[query(name = "gitCommitHash")]
-#[candid_method(query, rename = "gitCommitHash")]
+#[query(name = "git_commit_hash")]
+#[candid_method(query, rename = "git_commit_hash")]
 fn git_commit_hash() -> &'static str {
     run_command_str!("git", "rev-parse", "HEAD")
 }
 
-#[query(name = "rustToolchainInfo")]
-#[candid_method(query, rename = "rustToolchainInfo")]
+#[query(name = "rust_toolchain_info")]
+#[candid_method(query, rename = "rust_toolchain_info")]
 fn rust_toolchain_info() -> &'static str {
     run_command_str!("rustup", "show")
 }
 
-#[query(name = "dfxInfo")]
-#[candid_method(query, rename = "dfxInfo")]
+#[query(name = "dfx_info")]
+#[candid_method(query, rename = "dfx_info")]
 fn dfx_info() -> &'static str {
     run_command_str!("dfx", "--version")
 }
@@ -360,56 +360,56 @@ fn dfx_info() -> &'static str {
 // ==================================================================================================
 // metadata
 // ==================================================================================================
-#[query(name = "dip721Name", manual_reply = true)]
-#[candid_method(query, rename = "dip721Name")]
+#[query(name = "dip721_name", manual_reply = true)]
+#[candid_method(query, rename = "dip721_name")]
 fn dip721_name() -> ManualReply<Option<String>> {
     ledger::with(|ledger| ManualReply::one(ledger.metadata().name.as_ref()))
 }
 
-#[query(name = "dip721Logo", manual_reply = true)]
-#[candid_method(query, rename = "dip721Logo")]
+#[query(name = "dip721_logo", manual_reply = true)]
+#[candid_method(query, rename = "dip721_logo")]
 fn dip721_logo() -> ManualReply<Option<String>> {
     ledger::with(|ledger| ManualReply::one(ledger.metadata().logo.as_ref()))
 }
 
-#[query(name = "dip721Symbol", manual_reply = true)]
-#[candid_method(query, rename = "dip721Symbol")]
+#[query(name = "dip721_symbol", manual_reply = true)]
+#[candid_method(query, rename = "dip721_symbol")]
 fn dip721_symbol() -> ManualReply<Option<String>> {
     ledger::with(|ledger| ManualReply::one(ledger.metadata().symbol.as_ref()))
 }
 
-#[query(name = "dip721Custodians", manual_reply = true)]
-#[candid_method(query, rename = "dip721Custodians")]
+#[query(name = "dip721_custodians", manual_reply = true)]
+#[candid_method(query, rename = "dip721_custodians")]
 fn dip721_custodians() -> ManualReply<HashSet<Principal>> {
     ledger::with(|ledger| ManualReply::one(&ledger.metadata().custodians))
 }
 
-#[query(name = "dip721Metadata", manual_reply = true)]
-#[candid_method(query, rename = "dip721Metadata")]
+#[query(name = "dip721_metadata", manual_reply = true)]
+#[candid_method(query, rename = "dip721_metadata")]
 fn dip721_metadata() -> ManualReply<Metadata> {
     ledger::with(|ledger| ManualReply::one(ledger.metadata()))
 }
 
-#[update(name = "dip721SetName", guard = "is_canister_custodian")]
-#[candid_method(update, rename = "dip721SetName")]
+#[update(name = "dip721_set_name", guard = "is_canister_custodian")]
+#[candid_method(update, rename = "dip721_set_name")]
 fn dip721_set_name(name: String) {
     ledger::with_mut(|ledger| ledger.metadata_mut().name = Some(name));
 }
 
-#[update(name = "dip721SetLogo", guard = "is_canister_custodian")]
-#[candid_method(update, rename = "dip721SetLogo")]
+#[update(name = "dip721_set_logo", guard = "is_canister_custodian")]
+#[candid_method(update, rename = "dip721_set_logo")]
 fn dip721_set_logo(logo: String) {
     ledger::with_mut(|ledger| ledger.metadata_mut().logo = Some(logo));
 }
 
-#[update(name = "dip721SetSymbol", guard = "is_canister_custodian")]
-#[candid_method(update, rename = "dip721SetSymbol")]
+#[update(name = "dip721_set_symbol", guard = "is_canister_custodian")]
+#[candid_method(update, rename = "dip721_set_symbol")]
 fn dip721_set_symbol(symbol: String) {
     ledger::with_mut(|ledger| ledger.metadata_mut().symbol = Some(symbol));
 }
 
-#[update(name = "dip721SetCustodians", guard = "is_canister_custodian")]
-#[candid_method(update, rename = "dip721SetCustodians")]
+#[update(name = "dip721_set_custodians", guard = "is_canister_custodian")]
+#[candid_method(update, rename = "dip721_set_custodians")]
 fn dip721_set_custodians(custodians: HashSet<Principal>) {
     ledger::with_mut(|ledger| ledger.metadata_mut().custodians = custodians);
 }
@@ -419,32 +419,32 @@ fn dip721_set_custodians(custodians: HashSet<Principal>) {
 // ==================================================================================================
 /// Returns the total current supply of NFT tokens.
 /// NFTs that are minted and later burned explicitly or sent to the zero address should also count towards totalSupply.
-#[query(name = "dip721TotalSupply")]
-#[candid_method(query, rename = "dip721TotalSupply")]
+#[query(name = "dip721_total_supply")]
+#[candid_method(query, rename = "dip721_total_supply")]
 fn dip721_total_supply() -> Nat {
     ledger::with(|ledger| Nat::from(ledger.tokens_count()))
 }
 
-#[query(name = "dip721TotalTransactions")]
-#[candid_method(query, rename = "dip721TotalTransactions")]
+#[query(name = "dip721_total_transactions")]
+#[candid_method(query, rename = "dip721_total_transactions")]
 fn dip721_total_transactions() -> Nat {
     ledger::with(|ledger| ledger.tx_count())
 }
 
-#[query(name = "dip721Cycles")]
-#[candid_method(query, rename = "dip721Cycles")]
+#[query(name = "dip721_cycles")]
+#[candid_method(query, rename = "dip721_cycles")]
 fn dip721_cycles() -> Nat {
     Nat::from(canister_balance128())
 }
 
-#[query(name = "dip721TotalUniqueHolders")]
-#[candid_method(query, rename = "dip721TotalUniqueHolders")]
+#[query(name = "dip721_total_unique_holders")]
+#[candid_method(query, rename = "dip721_total_unique_holders")]
 fn dip721_total_unique_holders() -> Nat {
     ledger::with(|ledger| Nat::from(ledger.owners_count()))
 }
 
-#[query(name = "dip721Stats")]
-#[candid_method(query, rename = "dip721Stats")]
+#[query(name = "dip721_stats")]
+#[candid_method(query, rename = "dip721_stats")]
 fn dip721_stats() -> Stats {
     Stats {
         total_transactions: dip721_total_transactions(),
@@ -457,8 +457,8 @@ fn dip721_stats() -> Stats {
 // ==================================================================================================
 // supported interfaces
 // ==================================================================================================
-#[query(name = "dip721SupportedInterfaces")]
-#[candid_method(query, rename = "dip721SupportedInterfaces")]
+#[query(name = "dip721_supported_interfaces")]
+#[candid_method(query, rename = "dip721_supported_interfaces")]
 fn dip721_supported_interfaces() -> Vec<SupportedInterface> {
     vec![SupportedInterface::Approval, SupportedInterface::Mint]
 }
@@ -466,8 +466,8 @@ fn dip721_supported_interfaces() -> Vec<SupportedInterface> {
 // ==================================================================================================
 // balance
 // ==================================================================================================
-#[query(name = "dip721BalanceOf")]
-#[candid_method(query, rename = "dip721BalanceOf")]
+#[query(name = "dip721_balance_of")]
+#[candid_method(query, rename = "dip721_balance_of")]
 fn dip721_balance_of(owner: Principal) -> Result<Nat, NftError> {
     ledger::with(|ledger| {
         ledger
@@ -479,42 +479,44 @@ fn dip721_balance_of(owner: Principal) -> Result<Nat, NftError> {
 // ==================================================================================================
 // token ownership
 // ==================================================================================================
-#[query(name = "dip721OwnerOf")]
-#[candid_method(query, rename = "dip721OwnerOf")]
+#[query(name = "dip721_owner_of")]
+#[candid_method(query, rename = "dip721_owner_of")]
 fn dip721_owner_of(token_identifier: TokenIdentifier) -> Result<Option<Principal>, NftError> {
     ledger::with(|ledger| ledger.owner_of(&token_identifier))
 }
 
-#[query(name = "dip721OperatorOf")]
-#[candid_method(query, rename = "dip721OperatorOf")]
+#[query(name = "dip721_operator_of")]
+#[candid_method(query, rename = "dip721_operator_of")]
 fn dip721_operator_of(token_identifier: TokenIdentifier) -> Result<Option<Principal>, NftError> {
     ledger::with(|ledger| ledger.operator_of(&token_identifier))
 }
 
-#[query(name = "dip721OwnerTokenMetadata", manual_reply = true)]
-#[candid_method(query, rename = "dip721OwnerTokenMetadata")]
-fn dip721_owner_token_metadata(owner: Principal) -> ManualReply<Result<Vec<TokenMetadata>, NftError>> {
+#[query(name = "dip721_owner_token_metadata", manual_reply = true)]
+#[candid_method(query, rename = "dip721_owner_token_metadata")]
+fn dip721_owner_token_metadata(
+    owner: Principal,
+) -> ManualReply<Result<Vec<TokenMetadata>, NftError>> {
     ledger::with(|ledger| ManualReply::one(ledger.owner_token_metadata(&owner)))
 }
 
-#[query(name = "dip721OperatorTokenMetadata", manual_reply = true)]
-#[candid_method(query, rename = "dip721OperatorTokenMetadata")]
+#[query(name = "dip721_operator_token_metadata", manual_reply = true)]
+#[candid_method(query, rename = "dip721_operator_token_metadata")]
 fn dip721_operator_token_metadata(
     operator: Principal,
 ) -> ManualReply<Result<Vec<TokenMetadata>, NftError>> {
     ledger::with(|ledger| ManualReply::one(ledger.operator_token_metadata(&operator)))
 }
 
-#[query(name = "dip721OwnerTokenIdentifiers", manual_reply = true)]
-#[candid_method(query, rename = "dip721OwnerTokenIdentifiers")]
+#[query(name = "dip721_owner_token_identifiers", manual_reply = true)]
+#[candid_method(query, rename = "dip721_owner_token_identifiers")]
 fn dip721_owner_token_identifiers(
     owner: Principal,
 ) -> ManualReply<Result<Vec<TokenIdentifier>, NftError>> {
     ledger::with(|ledger| ManualReply::one(ledger.owner_token_identifiers(&owner)))
 }
 
-#[query(name = "dip721OperatorTokenIdentifiers", manual_reply = true)]
-#[candid_method(query, rename = "dip721OperatorTokenIdentifiers")]
+#[query(name = "dip721_operator_token_identifiers", manual_reply = true)]
+#[candid_method(query, rename = "dip721_operator_token_identifiers")]
 fn dip721_operator_token_identifiers(
     operator: Principal,
 ) -> ManualReply<Result<Vec<TokenIdentifier>, NftError>> {
@@ -524,8 +526,8 @@ fn dip721_operator_token_identifiers(
 // ==================================================================================================
 // token metadata
 // ==================================================================================================
-#[query(name = "dip721TokenMetadata", manual_reply = true)]
-#[candid_method(query, rename = "dip721TokenMetadata")]
+#[query(name = "dip721_token_metadata", manual_reply = true)]
+#[candid_method(query, rename = "dip721_token_metadata")]
 fn dip721_token_metadata(
     token_identifier: TokenIdentifier,
 ) -> ManualReply<Result<TokenMetadata, NftError>> {
@@ -535,8 +537,8 @@ fn dip721_token_metadata(
 // ==================================================================================================
 // approved for all
 // ==================================================================================================
-#[query(name = "dip721IsApprovedForAll")]
-#[candid_method(query, rename = "dip721IsApprovedForAll")]
+#[query(name = "dip721_is_approved_for_all")]
+#[candid_method(query, rename = "dip721_is_approved_for_all")]
 fn dip721_is_approved_for_all(owner: Principal, operator: Principal) -> Result<bool, NftError> {
     ledger::with(|ledger| {
         ledger
@@ -552,8 +554,8 @@ fn dip721_is_approved_for_all(owner: Principal, operator: Principal) -> Result<b
 // ==================================================================================================
 // core api
 // ==================================================================================================
-#[update(name = "dip721Approve")]
-#[candid_method(update, rename = "dip721Approve")]
+#[update(name = "dip721_approve")]
+#[candid_method(update, rename = "dip721_approve")]
 fn dip721_approve(operator: Principal, token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
         let caller = caller();
@@ -592,8 +594,8 @@ fn dip721_approve(operator: Principal, token_identifier: TokenIdentifier) -> Res
 /// since we've supported single operator per owner only
 /// so when `is_approved` is false that mean set all caller's nfts to None regardless of `operator`
 /// otherwise set all caller's nfts to `operator`
-#[update(name = "dip721SetApprovalForAll")]
-#[candid_method(update, rename = "dip721SetApprovalForAll")]
+#[update(name = "dip721_set_approval_for_all")]
+#[candid_method(update, rename = "dip721_set_approval_for_all")]
 fn dip721_set_approval_for_all(operator: Principal, is_approved: bool) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
         let caller = caller();
@@ -629,8 +631,8 @@ fn dip721_set_approval_for_all(operator: Principal, is_approved: bool) -> Result
     })
 }
 
-#[update(name = "dip721Transfer")]
-#[candid_method(update, rename = "dip721Transfer")]
+#[update(name = "dip721_transfer")]
+#[candid_method(update, rename = "dip721_transfer")]
 fn dip721_transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
     ledger::with_mut(|ledger| {
         let caller = caller();
@@ -662,8 +664,8 @@ fn dip721_transfer(to: Principal, token_identifier: TokenIdentifier) -> Result<N
     })
 }
 
-#[update(name = "dip721TransferFrom")]
-#[candid_method(update, rename = "dip721TransferFrom")]
+#[update(name = "dip721_transfer_from")]
+#[candid_method(update, rename = "dip721_transfer_from")]
 fn dip721_transfer_from(
     owner: Principal,
     to: Principal,
@@ -703,8 +705,8 @@ fn dip721_transfer_from(
     })
 }
 
-#[update(name = "dip721Mint", guard = "is_canister_custodian")]
-#[candid_method(update, rename = "dip721Mint")]
+#[update(name = "dip721_mint", guard = "is_canister_custodian")]
+#[candid_method(update, rename = "dip721_mint")]
 fn dip721_mint(
     to: Principal,
     token_identifier: TokenIdentifier,

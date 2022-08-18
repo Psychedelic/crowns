@@ -110,74 +110,74 @@ export const idlFactory = ({ IDL }) => {
   });
   const ManualReply_3 = IDL.Variant({ 'Ok' : TokenMetadata, 'Err' : NftError });
   return IDL.Service({
-    'dfxInfo' : IDL.Func([], [IDL.Text], ['query']),
-    'dip721Approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
-    'dip721BalanceOf' : IDL.Func([IDL.Principal], [Result], ['query']),
-    'dip721Custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
-    'dip721Cycles' : IDL.Func([], [IDL.Nat], ['query']),
-    'dip721IsApprovedForAll' : IDL.Func(
+    'dfx_info' : IDL.Func([], [IDL.Text], ['query']),
+    'dip721_approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
+    'dip721_balance_of' : IDL.Func([IDL.Principal], [Result], ['query']),
+    'dip721_custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'dip721_cycles' : IDL.Func([], [IDL.Nat], ['query']),
+    'dip721_is_approved_for_all' : IDL.Func(
         [IDL.Principal, IDL.Principal],
         [Result_1],
         ['query'],
       ),
-    'dip721Logo' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
-    'dip721Metadata' : IDL.Func([], [ManualReply], ['query']),
-    'dip721Mint' : IDL.Func(
+    'dip721_logo' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'dip721_metadata' : IDL.Func([], [ManualReply], ['query']),
+    'dip721_mint' : IDL.Func(
         [IDL.Principal, IDL.Nat, IDL.Vec(IDL.Tuple(IDL.Text, GenericValue))],
         [Result],
         [],
       ),
-    'dip721Name' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
-    'dip721OperatorOf' : IDL.Func([IDL.Nat], [Result_2], ['query']),
-    'dip721OperatorTokenIdentifiers' : IDL.Func(
+    'dip721_name' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'dip721_operator_of' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'dip721_operator_token_identifiers' : IDL.Func(
         [IDL.Principal],
         [ManualReply_1],
         ['query'],
       ),
-    'dip721OperatorTokenMetadata' : IDL.Func(
+    'dip721_operator_token_metadata' : IDL.Func(
         [IDL.Principal],
         [ManualReply_2],
         ['query'],
       ),
-    'dip721OwnerOf' : IDL.Func([IDL.Nat], [Result_2], ['query']),
-    'dip721OwnerTokenIdentifiers' : IDL.Func(
+    'dip721_owner_of' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'dip721_owner_token_identifiers' : IDL.Func(
         [IDL.Principal],
         [ManualReply_1],
         ['query'],
       ),
-    'dip721OwnerTokenMetadata' : IDL.Func(
+    'dip721_owner_token_metadata' : IDL.Func(
         [IDL.Principal],
         [ManualReply_2],
         ['query'],
       ),
-    'dip721SetApprovalForAll' : IDL.Func(
+    'dip721_set_approval_for_all' : IDL.Func(
         [IDL.Principal, IDL.Bool],
         [Result],
         [],
       ),
-    'dip721SetCustodians' : IDL.Func([IDL.Vec(IDL.Principal)], [], []),
-    'dip721SetLogo' : IDL.Func([IDL.Text], [], []),
-    'dip721SetName' : IDL.Func([IDL.Text], [], []),
-    'dip721SetSymbol' : IDL.Func([IDL.Text], [], []),
-    'dip721Stats' : IDL.Func([], [Stats], ['query']),
-    'dip721SupportedInterfaces' : IDL.Func(
+    'dip721_set_custodians' : IDL.Func([IDL.Vec(IDL.Principal)], [], []),
+    'dip721_set_logo' : IDL.Func([IDL.Text], [], []),
+    'dip721_set_name' : IDL.Func([IDL.Text], [], []),
+    'dip721_set_symbol' : IDL.Func([IDL.Text], [], []),
+    'dip721_stats' : IDL.Func([], [Stats], ['query']),
+    'dip721_supported_interfaces' : IDL.Func(
         [],
         [IDL.Vec(SupportedInterface)],
         ['query'],
       ),
-    'dip721Symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
-    'dip721TokenMetadata' : IDL.Func([IDL.Nat], [ManualReply_3], ['query']),
-    'dip721TotalSupply' : IDL.Func([], [IDL.Nat], ['query']),
-    'dip721TotalTransactions' : IDL.Func([], [IDL.Nat], ['query']),
-    'dip721TotalUniqueHolders' : IDL.Func([], [IDL.Nat], ['query']),
-    'dip721Transfer' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
-    'dip721TransferFrom' : IDL.Func(
+    'dip721_symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'dip721_token_metadata' : IDL.Func([IDL.Nat], [ManualReply_3], ['query']),
+    'dip721_total_supply' : IDL.Func([], [IDL.Nat], ['query']),
+    'dip721_total_transactions' : IDL.Func([], [IDL.Nat], ['query']),
+    'dip721_total_unique_holders' : IDL.Func([], [IDL.Nat], ['query']),
+    'dip721_transfer' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
+    'dip721_transfer_from' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Nat],
         [Result],
         [],
       ),
-    'gitCommitHash' : IDL.Func([], [IDL.Text], ['query']),
-    'rustToolchainInfo' : IDL.Func([], [IDL.Text], ['query']),
+    'git_commit_hash' : IDL.Func([], [IDL.Text], ['query']),
+    'rust_toolchain_info' : IDL.Func([], [IDL.Text], ['query']),
   });
 };
 export const init = ({ IDL }) => {
