@@ -20,7 +20,9 @@ const testLogo = async (t: Assertions) => {
 const testSymbol = async (t: Assertions) => {
   (await Promise.all(allActors.map(actor => actor.dip721Symbol()))).forEach(result => t.deepEqual(result, []));
   await t.notThrowsAsync(custodianActor.dip721SetSymbol("nftSymbol"));
-  (await Promise.all(allActors.map(actor => actor.dip721Symbol()))).forEach(result => t.deepEqual(result, ["nftSymbol"]));
+  (await Promise.all(allActors.map(actor => actor.dip721Symbol()))).forEach(result =>
+    t.deepEqual(result, ["nftSymbol"])
+  );
 };
 
 const testCustodians = async (t: Assertions) => {
