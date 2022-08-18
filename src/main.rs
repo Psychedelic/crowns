@@ -447,10 +447,10 @@ fn dip721_total_unique_holders() -> Nat {
 #[candid_method(query, rename = "stats")]
 fn dip721_stats() -> Stats {
     Stats {
-        total_transactions: total_transactions(),
-        total_supply: total_supply(),
-        cycles: cycles(),
-        total_unique_holders: total_unique_holders(),
+        total_transactions: dip721_total_transactions(),
+        total_supply: dip721_total_supply(),
+        cycles: dip721_cycles(),
+        total_unique_holders: dip721_total_unique_holders(),
     }
 }
 
