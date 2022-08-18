@@ -54,6 +54,7 @@
     tweetnacl "^1.0.1"
 
 "@dfinity/principal10@npm:@dfinity/principal@^0.10.1", "@dfinity/principal@^0.10.1":
+  name "@dfinity/principal10"
   version "0.10.4"
   resolved "https://registry.yarnpkg.com/@dfinity/principal/-/principal-0.10.4.tgz#8f28f631929cc420a4238f75930090aba84d74b8"
   integrity sha512-qwzpmq5wfyeKMBspRZmuYvTxu1dqN+IY0ThACHTRh6D58QjnVQNCD3Hq9d5eEDu0qyNcY22cJEWwzrzZaaoVmw==
@@ -118,9 +119,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@psychedelic/cap-js@psychedelic/cap-js#main":
+"@psychedelic/cap-js@^0.0.8":
   version "0.0.8"
-  resolved "https://codeload.github.com/psychedelic/cap-js/tar.gz/f78c03f6efb43e5e9fe1fb7959e53d7d03d8ad17"
+  resolved "https://npm.pkg.github.com/download/@Psychedelic/cap-js/0.0.8/1843754aab039d490b39685aeb35cda0e5e6e001#1843754aab039d490b39685aeb35cda0e5e6e001"
+  integrity sha512-h188QIJe3AsOyP1dIPT+4dQCb/J1zWMyKrR5t+cPaO5gNUful/betb+kyiGgL3+6ahshDv4Tkg+kEVaEW6qogQ==
   dependencies:
     "@dfinity/agent" "^0.10.1"
     "@dfinity/candid" "^0.10.1"
