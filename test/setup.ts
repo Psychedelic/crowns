@@ -23,7 +23,7 @@ export const nftCanisterId = JSON.parse(readFileSync("../.dfx/local/canister_ids
   "crowns-test"
 ].local as string;
 export const capCanisterId = JSON.parse(readFileSync("../cap/.dfx/local/canister_ids.json", {encoding: "utf8"}))[
-  "ic-history-router"
+  "cap-router"
 ].local as string;
 
 const createActor = async (identity: Identity): Promise<Service> => {
