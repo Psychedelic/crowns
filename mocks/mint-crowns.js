@@ -1,10 +1,10 @@
-import { Actor, HttpAgent } from "@dfinity/agent";
-import { Secp256k1KeyIdentity } from "@dfinity/identity";
-import { idlFactory as crownsIdlFactory } from "./factory/idl.js";
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { Secp256k1KeyIdentity } from '@dfinity/identity';
+import { idlFactory as crownsIdlFactory } from './factory/idl.js';
 import wicpIdlFactory from './factory/wicp.js';
-import fetch from "isomorphic-fetch";
-import { readFileSync } from "fs";
-import { Principal } from "@dfinity/principal";
+import fetch from 'isomorphic-fetch';
+import { readFileSync } from 'fs';
+import { Principal } from '@dfinity/principal';
 import { userPrincipals, systemPrincipal } from './principals.js';
 import settings from './settings.js';
 import { delay } from './utils.js';
@@ -14,12 +14,8 @@ import 'dotenv/config';
 const amountE8sPerUser = 10_000_000_000;
 
 (async () => {
-  const {
-    host,
-    aggrCrownsJsonPath,
-    chunkSize,
-    chunkPromiseDelayMs,
-  } = settings;
+  const { host, aggrCrownsJsonPath, chunkSize, chunkPromiseDelayMs } =
+    settings;
 
   const localCrownsCanisterId = process.env.CROWNS_ID;
   const localWicpCanisterId = process.env.WICP_ID;
@@ -31,7 +27,9 @@ const amountE8sPerUser = 10_000_000_000;
   try {
     await agent.fetchRootKey();
   } catch (err) {
-    console.warn('Oops! Unable to fetch root key, is the local replica running?');
+    console.warn(
+      'Oops! Unable to fetch root key, is the local replica running?',
+    );
     console.error(err);
   }
 
@@ -45,7 +43,7 @@ const amountE8sPerUser = 10_000_000_000;
     agent,
   });
 
-  const data = JSON.parse(readFileSync(aggrCrownsJsonPath, "utf-8"));
+  const data = JSON.parse(readFileSync(aggrCrownsJsonPath, 'utf-8'));
 
   const chunks = data.reduce((all, one, i) => {
     const chIdx = Math.floor(i / chunkSize);
@@ -53,7 +51,11 @@ const amountE8sPerUser = 10_000_000_000;
     return all;
   }, []);
 
-  const hasUserPrincipalAtIndex = (parentId, idx, defaultPrincipal) => {
+  const hasUserPrincipalAtIndex = (
+    parentId,
+    idx,
+    defaultPrincipal,
+  ) => {
     if (parentId > 1) return defaultPrincipal;
 
     return userPrincipals[idx] || defaultPrincipal;
@@ -62,15 +64,19 @@ const amountE8sPerUser = 10_000_000_000;
   const maxChunks = process.env.MAX_CHUNKS || chunks.length;
 
   for (let i = 0; i < maxChunks; i++) {
-    console.log("Currently processing chunk nr ", i);
+    console.log('Currently processing chunk nr ', i);
 
     try {
       await delay(chunkPromiseDelayMs);
       await Promise.all(
         chunks[i].map((c, idx) => {
           const principal = hasUserPrincipalAtIndex(i, idx, c.to);
-          actorMkp.mint(Principal.fromText(principal), BigInt(c.id), c.properties);
-        })
+          actorMkp.dip721_mint(
+            Principal.fromText(principal),
+            BigInt(c.id),
+            c.properties,
+          );
+        }),
       );
     } catch (e) {
       throw e;
@@ -90,3 +96,4 @@ const amountE8sPerUser = 10_000_000_000;
 
   await Promise.all(promisesForWicpTopup);
 })();
+
