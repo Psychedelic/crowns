@@ -6,9 +6,13 @@ import fetch from 'isomorphic-fetch';
 import { readFileSync } from 'fs';
 import { Principal } from '@dfinity/principal';
 import { userPrincipals, systemPrincipal } from './principals.js';
-import settings from './settings.js';
 import { delay } from './utils.js';
 import 'dotenv/config';
+
+import { readFile } from 'fs/promises';
+const settings = JSON.parse(
+  await readFile(new URL('./settings.json', import.meta.url)),
+);
 
 // 100 WICP (10_000_000_000 / 10^8 )
 const amountE8sPerUser = 10_000_000_000;
