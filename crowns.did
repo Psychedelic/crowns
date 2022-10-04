@@ -53,7 +53,7 @@ type Stats = record {
   total_unique_holders : nat;
   total_supply : nat;
 };
-type SupportedInterface = variant { Mint; Approval };
+type SupportedInterface = variant { Burn; Mint; Approval };
 type TokenMetadata = record {
   transferred_at : opt nat64;
   transferred_by : opt principal;
@@ -91,9 +91,15 @@ type Vec = vec record {
   };
 };
 service : (opt InitArgs) -> {
+  approve : (principal, nat) -> (Result);
+  balanceOf : (principal) -> (Result) query;
+  burn : (nat) -> (Result);
+  custodians : () -> (vec principal) query;
+  cycles : () -> (nat) query;
   dfx_info : () -> (text) query;
   dip721_approve : (principal, nat) -> (Result);
   dip721_balance_of : (principal) -> (Result) query;
+  dip721_burn : (nat) -> (Result);
   dip721_custodians : () -> (vec principal) query;
   dip721_cycles : () -> (nat) query;
   dip721_is_approved_for_all : (principal, principal) -> (Result_1) query;
@@ -122,5 +128,30 @@ service : (opt InitArgs) -> {
   dip721_transfer : (principal, nat) -> (Result);
   dip721_transfer_from : (principal, principal, nat) -> (Result);
   git_commit_hash : () -> (text) query;
+  isApprovedForAll : (principal, principal) -> (Result_1) query;
+  logo : () -> (opt text) query;
+  metadata : () -> (ManualReply) query;
+  mint : (principal, nat, vec record { text; GenericValue }) -> (Result);
+  name : () -> (opt text) query;
+  operatorOf : (nat) -> (Result_2) query;
+  operatorTokenIdentifiers : (principal) -> (ManualReply_1) query;
+  operatorTokenMetadata : (principal) -> (ManualReply_2) query;
+  ownerOf : (nat) -> (Result_2) query;
+  ownerTokenIdentifiers : (principal) -> (ManualReply_1) query;
+  ownerTokenMetadata : (principal) -> (ManualReply_2) query;
   rust_toolchain_info : () -> (text) query;
+  setApprovalForAll : (principal, bool) -> (Result);
+  setCustodians : (vec principal) -> ();
+  setLogo : (text) -> ();
+  setName : (text) -> ();
+  setSymbol : (text) -> ();
+  stats : () -> (Stats) query;
+  supportedInterfaces : () -> (vec SupportedInterface) query;
+  symbol : () -> (opt text) query;
+  tokenMetadata : (nat) -> (ManualReply_3) query;
+  totalSupply : () -> (nat) query;
+  totalTransactions : () -> (nat) query;
+  totalUniqueHolders : () -> (nat) query;
+  transfer : (principal, nat) -> (Result);
+  transferFrom : (principal, principal, nat) -> (Result);
 }
