@@ -19,6 +19,14 @@ export const idlFactory = ({ IDL }) => {
     'OwnerNotFound' : IDL.Null,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : NftError });
+  const CoverMetadata = IDL.Record({
+    'dfx_version' : IDL.Text,
+    'canister_name' : IDL.Text,
+    'commit_hash' : IDL.Text,
+    'repo_url' : IDL.Text,
+    'rust_version' : IDL.Opt(IDL.Text),
+    'optimize_count' : IDL.Nat8,
+  });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : NftError });
   const ManualReply = IDL.Record({
     'logo' : IDL.Opt(IDL.Text),
@@ -110,7 +118,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const ManualReply_3 = IDL.Variant({ 'Ok' : TokenMetadata, 'Err' : NftError });
   return IDL.Service({
-    'dfx_info' : IDL.Func([], [IDL.Text], ['query']),
+    'approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
+    'balanceOf' : IDL.Func([IDL.Principal], [Result], ['query']),
+    'coverMetadata' : IDL.Func([], [CoverMetadata], ['query']),
+    'custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'cycles' : IDL.Func([], [IDL.Nat], ['query']),
     'dip721_approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'dip721_balance_of' : IDL.Func([IDL.Principal], [Result], ['query']),
     'dip721_custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
@@ -176,8 +188,63 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
-    'git_commit_hash' : IDL.Func([], [IDL.Text], ['query']),
-    'rust_toolchain_info' : IDL.Func([], [IDL.Text], ['query']),
+    'isApprovedForAll' : IDL.Func(
+        [IDL.Principal, IDL.Principal],
+        [Result_1],
+        ['query'],
+      ),
+    'logo' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'metadata' : IDL.Func([], [ManualReply], ['query']),
+    'mint' : IDL.Func(
+        [IDL.Principal, IDL.Nat, IDL.Vec(IDL.Tuple(IDL.Text, GenericValue))],
+        [Result],
+        [],
+      ),
+    'name' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'operatorOf' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'operatorTokenIdentifiers' : IDL.Func(
+        [IDL.Principal],
+        [ManualReply_1],
+        ['query'],
+      ),
+    'operatorTokenMetadata' : IDL.Func(
+        [IDL.Principal],
+        [ManualReply_2],
+        ['query'],
+      ),
+    'ownerOf' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'ownerTokenIdentifiers' : IDL.Func(
+        [IDL.Principal],
+        [ManualReply_1],
+        ['query'],
+      ),
+    'ownerTokenMetadata' : IDL.Func(
+        [IDL.Principal],
+        [ManualReply_2],
+        ['query'],
+      ),
+    'setApprovalForAll' : IDL.Func([IDL.Principal, IDL.Bool], [Result], []),
+    'setCustodians' : IDL.Func([IDL.Vec(IDL.Principal)], [], []),
+    'setLogo' : IDL.Func([IDL.Text], [], []),
+    'setName' : IDL.Func([IDL.Text], [], []),
+    'setSymbol' : IDL.Func([IDL.Text], [], []),
+    'stats' : IDL.Func([], [Stats], ['query']),
+    'supportedInterfaces' : IDL.Func(
+        [],
+        [IDL.Vec(SupportedInterface)],
+        ['query'],
+      ),
+    'symbol' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
+    'tokenMetadata' : IDL.Func([IDL.Nat], [ManualReply_3], ['query']),
+    'totalSupply' : IDL.Func([], [IDL.Nat], ['query']),
+    'totalTransactions' : IDL.Func([], [IDL.Nat], ['query']),
+    'totalUniqueHolders' : IDL.Func([], [IDL.Nat], ['query']),
+    'transfer' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
+    'transferFrom' : IDL.Func(
+        [IDL.Principal, IDL.Principal, IDL.Nat],
+        [Result],
+        [],
+      ),
   });
 };
 export const init = ({ IDL }) => {

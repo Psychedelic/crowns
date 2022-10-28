@@ -82,7 +82,6 @@ mod types {
     pub enum SupportedInterface {
         Approval,
         Mint,
-        Burn,
     }
     #[derive(CandidType)]
     pub enum NftError {
@@ -317,18 +316,6 @@ mod ledger {
             token_metadata.operator = None;
         }
 
-        pub fn burn(&mut self, burned_by: Principal, token_identifier: &TokenIdentifier) {
-            let token_metadata = self
-                .tokens
-                .get_mut(token_identifier)
-                .expect("couldn't find token metadata");
-            token_metadata.owner = None;
-            token_metadata.operator = None;
-            token_metadata.is_burned = true;
-            token_metadata.burned_by = Some(burned_by);
-            token_metadata.burned_at = Some(time());
-        }
-
         pub fn inc_tx(&mut self) -> Nat {
             self.tx_count += 1;
             self.tx_count.clone()
@@ -353,25 +340,29 @@ pub fn is_canister_custodian() -> Result<(), String> {
     })
 }
 
-// ==================================================================================================
-// cover metadata
-// ==================================================================================================
-#[query()]
-#[candid_method(query)]
-fn git_commit_hash() -> &'static str {
-    run_command_str!("git", "rev-parse", "HEAD")
+// =====================================================================================================
+// CoverMetadata
+// =====================================================================================================
+#[derive(CandidType, Deserialize)]
+pub struct CoverMetadata {
+    pub canister_name: &'static str,
+    pub repo_url: &'static str,
+    pub commit_hash: &'static str,
+    pub rust_version: Option<&'static str>,
+    pub dfx_version: &'static str,
+    pub optimize_count: u8,
 }
-
-#[query()]
-#[candid_method(query)]
-fn rust_toolchain_info() -> &'static str {
-    run_command_str!("rustup", "show")
-}
-
-#[query()]
-#[candid_method(query)]
-fn dfx_info() -> &'static str {
-    run_command_str!("dfx", "--version")
+#[query(name = "coverMetadata")]
+#[candid_method(query, rename = "coverMetadata")]
+fn cover_metadata() -> CoverMetadata {
+    CoverMetadata {
+        canister_name: "crowns",
+        repo_url: "psychedelic/crowns",
+        commit_hash: run_command_str!("git", "rev-parse", "HEAD"),
+        dfx_version: "0.11.2",
+        rust_version: Some("1.63.0"),
+        optimize_count: 0,
+    }
 }
 
 // ==================================================================================================
@@ -477,11 +468,7 @@ fn dip721_stats() -> Stats {
 #[query()]
 #[candid_method(query)]
 fn dip721_supported_interfaces() -> Vec<SupportedInterface> {
-    vec![
-        SupportedInterface::Approval,
-        SupportedInterface::Mint,
-        SupportedInterface::Burn,
-    ]
+    vec![SupportedInterface::Approval, SupportedInterface::Mint]
 }
 
 // ==================================================================================================
@@ -770,34 +757,6 @@ fn dip721_mint(
                     DetailValue::from(token_identifier.to_string()),
                 ),
             ],
-        });
-
-        Ok(ledger.inc_tx() - 1)
-    })
-}
-
-#[update]
-#[candid_method(update)]
-fn dip721_burn(token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
-    ledger::with_mut(|ledger| {
-        let caller = caller();
-        let old_owner = ledger.owner_of(&token_identifier)?;
-        old_owner
-            .eq(&Some(caller))
-            .then_some(())
-            .ok_or(NftError::UnauthorizedOwner)?;
-        let old_operator = ledger.operator_of(&token_identifier)?;
-        ledger.update_owner_cache(&token_identifier, old_owner, None);
-        ledger.update_operator_cache(&token_identifier, old_operator, None);
-        ledger.burn(caller, &token_identifier);
-
-        insert_sync(IndefiniteEvent {
-            caller,
-            operation: "burn".into(),
-            details: vec![(
-                "token_identifier".into(),
-                DetailValue::from(token_identifier.to_string()),
-            )],
         });
 
         Ok(ledger.inc_tx() - 1)
