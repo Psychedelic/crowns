@@ -196,9 +196,3 @@ fn mint(
 ) -> Result<Nat, NftError> {
     dip721_mint(to, token_identifier, properties)
 }
-
-#[update(name = "burn")]
-#[candid_method(update, rename = "burn")]
-fn burn(token_identifier: TokenIdentifier) -> Result<Nat, NftError> {
-    dip721_burn(token_identifier)
-}

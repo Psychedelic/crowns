@@ -66,8 +66,7 @@ export interface Stats {
   'total_unique_holders' : bigint,
   'total_supply' : bigint,
 }
-export type SupportedInterface = { 'Burn' : null } |
-  { 'Mint' : null } |
+export type SupportedInterface = { 'Mint' : null } |
   { 'Approval' : null };
 export interface TokenMetadata {
   'transferred_at' : [] | [bigint],
@@ -108,13 +107,11 @@ export type Vec = Array<
 export interface _SERVICE {
   'approve' : ActorMethod<[Principal, bigint], Result>,
   'balanceOf' : ActorMethod<[Principal], Result>,
-  'burn' : ActorMethod<[bigint], Result>,
   'coverMetadata' : ActorMethod<[], CoverMetadata>,
   'custodians' : ActorMethod<[], Array<Principal>>,
   'cycles' : ActorMethod<[], bigint>,
   'dip721_approve' : ActorMethod<[Principal, bigint], Result>,
   'dip721_balance_of' : ActorMethod<[Principal], Result>,
-  'dip721_burn' : ActorMethod<[bigint], Result>,
   'dip721_custodians' : ActorMethod<[], Array<Principal>>,
   'dip721_cycles' : ActorMethod<[], bigint>,
   'dip721_is_approved_for_all' : ActorMethod<[Principal, Principal], Result_1>,

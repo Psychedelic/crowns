@@ -468,10 +468,7 @@ fn dip721_stats() -> Stats {
 #[query()]
 #[candid_method(query)]
 fn dip721_supported_interfaces() -> Vec<SupportedInterface> {
-    vec![
-        SupportedInterface::Approval,
-        SupportedInterface::Mint,
-    ]
+    vec![SupportedInterface::Approval, SupportedInterface::Mint]
 }
 
 // ==================================================================================================

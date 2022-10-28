@@ -113,7 +113,6 @@ export const idlFactory = ({ IDL }) => {
     'total_supply' : IDL.Nat,
   });
   const SupportedInterface = IDL.Variant({
-    'Burn' : IDL.Null,
     'Mint' : IDL.Null,
     'Approval' : IDL.Null,
   });
@@ -121,13 +120,11 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'balanceOf' : IDL.Func([IDL.Principal], [Result], ['query']),
-    'burn' : IDL.Func([IDL.Nat], [Result], []),
     'coverMetadata' : IDL.Func([], [CoverMetadata], ['query']),
     'custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'cycles' : IDL.Func([], [IDL.Nat], ['query']),
     'dip721_approve' : IDL.Func([IDL.Principal, IDL.Nat], [Result], []),
     'dip721_balance_of' : IDL.Func([IDL.Principal], [Result], ['query']),
-    'dip721_burn' : IDL.Func([IDL.Nat], [Result], []),
     'dip721_custodians' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'dip721_cycles' : IDL.Func([], [IDL.Nat], ['query']),
     'dip721_is_approved_for_all' : IDL.Func(

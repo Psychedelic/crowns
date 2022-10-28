@@ -16,7 +16,7 @@ jobs:
     env:
       CI: 1
       DEBUG: 0
-      DFX_VERSION: 0.9.3
+      DFX_VERSION: 0.11.2
       DFX_WARNING: -version_check
       NODE_ENV: ci
       DFX_CANDID_RELEASE: 2022-01-06
