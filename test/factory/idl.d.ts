@@ -1,6 +1,14 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export interface CoverMetadata {
+  'dfx_version' : string,
+  'canister_name' : string,
+  'commit_hash' : string,
+  'repo_url' : string,
+  'rust_version' : [] | [string],
+  'optimize_count' : number,
+}
 export type GenericValue = { 'Nat64Content' : bigint } |
   { 'Nat32Content' : number } |
   { 'BoolContent' : boolean } |
@@ -13,7 +21,7 @@ export type GenericValue = { 'Nat64Content' : bigint } |
   { 'Int8Content' : number } |
   { 'FloatContent' : number } |
   { 'Int16Content' : number } |
-  { 'BlobContent' : Array<number> } |
+  { 'BlobContent' : Uint8Array } |
   { 'NestedContent' : Vec } |
   { 'Principal' : Principal } |
   { 'TextContent' : string };
@@ -58,7 +66,8 @@ export interface Stats {
   'total_unique_holders' : bigint,
   'total_supply' : bigint,
 }
-export type SupportedInterface = { 'Mint' : null } |
+export type SupportedInterface = { 'Burn' : null } |
+  { 'Mint' : null } |
   { 'Approval' : null };
 export interface TokenMetadata {
   'transferred_at' : [] | [bigint],
@@ -90,16 +99,22 @@ export type Vec = Array<
       { 'Int8Content' : number } |
       { 'FloatContent' : number } |
       { 'Int16Content' : number } |
-      { 'BlobContent' : Array<number> } |
+      { 'BlobContent' : Uint8Array } |
       { 'NestedContent' : Vec } |
       { 'Principal' : Principal } |
       { 'TextContent' : string },
   ]
 >;
 export interface _SERVICE {
-  'dfx_info' : ActorMethod<[], string>,
+  'approve' : ActorMethod<[Principal, bigint], Result>,
+  'balanceOf' : ActorMethod<[Principal], Result>,
+  'burn' : ActorMethod<[bigint], Result>,
+  'coverMetadata' : ActorMethod<[], CoverMetadata>,
+  'custodians' : ActorMethod<[], Array<Principal>>,
+  'cycles' : ActorMethod<[], bigint>,
   'dip721_approve' : ActorMethod<[Principal, bigint], Result>,
   'dip721_balance_of' : ActorMethod<[Principal], Result>,
+  'dip721_burn' : ActorMethod<[bigint], Result>,
   'dip721_custodians' : ActorMethod<[], Array<Principal>>,
   'dip721_cycles' : ActorMethod<[], bigint>,
   'dip721_is_approved_for_all' : ActorMethod<[Principal, Principal], Result_1>,
@@ -130,6 +145,32 @@ export interface _SERVICE {
   'dip721_total_unique_holders' : ActorMethod<[], bigint>,
   'dip721_transfer' : ActorMethod<[Principal, bigint], Result>,
   'dip721_transfer_from' : ActorMethod<[Principal, Principal, bigint], Result>,
-  'git_commit_hash' : ActorMethod<[], string>,
-  'rust_toolchain_info' : ActorMethod<[], string>,
+  'isApprovedForAll' : ActorMethod<[Principal, Principal], Result_1>,
+  'logo' : ActorMethod<[], [] | [string]>,
+  'metadata' : ActorMethod<[], ManualReply>,
+  'mint' : ActorMethod<
+    [Principal, bigint, Array<[string, GenericValue]>],
+    Result,
+  >,
+  'name' : ActorMethod<[], [] | [string]>,
+  'operatorOf' : ActorMethod<[bigint], Result_2>,
+  'operatorTokenIdentifiers' : ActorMethod<[Principal], ManualReply_1>,
+  'operatorTokenMetadata' : ActorMethod<[Principal], ManualReply_2>,
+  'ownerOf' : ActorMethod<[bigint], Result_2>,
+  'ownerTokenIdentifiers' : ActorMethod<[Principal], ManualReply_1>,
+  'ownerTokenMetadata' : ActorMethod<[Principal], ManualReply_2>,
+  'setApprovalForAll' : ActorMethod<[Principal, boolean], Result>,
+  'setCustodians' : ActorMethod<[Array<Principal>], undefined>,
+  'setLogo' : ActorMethod<[string], undefined>,
+  'setName' : ActorMethod<[string], undefined>,
+  'setSymbol' : ActorMethod<[string], undefined>,
+  'stats' : ActorMethod<[], Stats>,
+  'supportedInterfaces' : ActorMethod<[], Array<SupportedInterface>>,
+  'symbol' : ActorMethod<[], [] | [string]>,
+  'tokenMetadata' : ActorMethod<[bigint], ManualReply_3>,
+  'totalSupply' : ActorMethod<[], bigint>,
+  'totalTransactions' : ActorMethod<[], bigint>,
+  'totalUniqueHolders' : ActorMethod<[], bigint>,
+  'transfer' : ActorMethod<[Principal, bigint], Result>,
+  'transferFrom' : ActorMethod<[Principal, Principal, bigint], Result>,
 }

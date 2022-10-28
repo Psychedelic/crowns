@@ -353,25 +353,29 @@ pub fn is_canister_custodian() -> Result<(), String> {
     })
 }
 
-// ==================================================================================================
-// cover metadata
-// ==================================================================================================
-#[query()]
-#[candid_method(query)]
-fn git_commit_hash() -> &'static str {
-    run_command_str!("git", "rev-parse", "HEAD")
+// =====================================================================================================
+// CoverMetadata
+// =====================================================================================================
+#[derive(CandidType, Deserialize)]
+pub struct CoverMetadata {
+    pub canister_name: &'static str,
+    pub repo_url: &'static str,
+    pub commit_hash: &'static str,
+    pub rust_version: Option<&'static str>,
+    pub dfx_version: &'static str,
+    pub optimize_count: u8,
 }
-
-#[query()]
-#[candid_method(query)]
-fn rust_toolchain_info() -> &'static str {
-    run_command_str!("rustup", "show")
-}
-
-#[query()]
-#[candid_method(query)]
-fn dfx_info() -> &'static str {
-    run_command_str!("dfx", "--version")
+#[query(name = "coverMetadata")]
+#[candid_method(query, rename = "coverMetadata")]
+fn cover_metadata() -> CoverMetadata {
+    CoverMetadata {
+        canister_name: "crowns",
+        repo_url: "psychedelic/crowns",
+        commit_hash: run_command_str!("git", "rev-parse", "HEAD"),
+        dfx_version: "0.11.2",
+        rust_version: Some("1.63.0"),
+        optimize_count: 0,
+    }
 }
 
 // ==================================================================================================

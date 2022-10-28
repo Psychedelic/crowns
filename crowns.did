@@ -1,3 +1,11 @@
+type CoverMetadata = record {
+  dfx_version : text;
+  canister_name : text;
+  commit_hash : text;
+  repo_url : text;
+  rust_version : opt text;
+  optimize_count : nat8;
+};
 type GenericValue = variant {
   Nat64Content : nat64;
   Nat32Content : nat32;
@@ -94,9 +102,9 @@ service : (opt InitArgs) -> {
   approve : (principal, nat) -> (Result);
   balanceOf : (principal) -> (Result) query;
   burn : (nat) -> (Result);
+  coverMetadata : () -> (CoverMetadata) query;
   custodians : () -> (vec principal) query;
   cycles : () -> (nat) query;
-  dfx_info : () -> (text) query;
   dip721_approve : (principal, nat) -> (Result);
   dip721_balance_of : (principal) -> (Result) query;
   dip721_burn : (nat) -> (Result);
@@ -127,7 +135,6 @@ service : (opt InitArgs) -> {
   dip721_total_unique_holders : () -> (nat) query;
   dip721_transfer : (principal, nat) -> (Result);
   dip721_transfer_from : (principal, principal, nat) -> (Result);
-  git_commit_hash : () -> (text) query;
   isApprovedForAll : (principal, principal) -> (Result_1) query;
   logo : () -> (opt text) query;
   metadata : () -> (ManualReply) query;
@@ -139,7 +146,6 @@ service : (opt InitArgs) -> {
   ownerOf : (nat) -> (Result_2) query;
   ownerTokenIdentifiers : (principal) -> (ManualReply_1) query;
   ownerTokenMetadata : (principal) -> (ManualReply_2) query;
-  rust_toolchain_info : () -> (text) query;
   setApprovalForAll : (principal, bool) -> (Result);
   setCustodians : (vec principal) -> ();
   setLogo : (text) -> ();
