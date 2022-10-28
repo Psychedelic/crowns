@@ -47,10 +47,6 @@ jobs:
           override: true
           target: wasm32-unknown-unknown
 
-      - name: Install ic-cdk-optimizer
-        if: steps.cache-rust.outputs.cache-hit != 'true'
-        run: cargo install ic-cdk-optimizer
-
       - name: Cache Dfx
         id: cache-dfx
         uses: actions/cache@v2
